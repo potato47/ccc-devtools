@@ -1,0 +1,240 @@
+<!-- 引入样式 -->
+<!-- <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css"> -->
+<link rel="stylesheet" href="app/editor/static/preview-templates/ccc-devtools/css/element-ui.css">
+<!-- <link rel="stylesheet" href="http://unpkg.com/iview/dist/styles/iview.css"> -->
+<link rel="stylesheet" href="app/editor/static/preview-templates/ccc-devtools/css/iview.css">
+
+<style>
+	body {
+        background-color: #333;
+    }
+	.el-color-picker, .el-color-picker__trigger {
+		width: 100% !important;
+	}
+	.el-input-number .el-input__inner {
+		text-align: left;
+	}
+	.el-input-number.is-controls-right .el-input__inner {
+		padding-left: 5px;
+		padding-right: 5px;
+	}
+	.ivu-collapse-content {
+		color: #515a6e;
+		padding: 0 5px 0 16px;
+		background-color: #fff;
+	}
+	.el-input-number--mini .el-input-number__decrease, .el-input-number--mini .el-input-number__increase {
+		width: 12px;
+		font-size: 12px;
+	}
+</style>
+<div id="app">
+	<div class="demo-split">
+		<Split v-model="splitLeft">
+			<div slot="left" class="demo-split-pane" id="game_panel" style="display:flex;justify-content:left;align-items:center;height: 100vh;">
+				<div id="top" style="position: absolute;top:0;"></div>
+			</div>
+			<div slot="right" class="demo-split-pane no-padding">
+				<Split v-model="splitRight" mode="vertical">
+					<div slot="top" class="demo-split-pane" style="padding-left: 5px;">
+						<el-input placeholder="搜索节点" v-model="filterText" size="mini" id="searchInput"></el-input>
+						<el-tree :data="sceneTreeData" :props="nodeProps" :default-expanded-keys="defaultExpandedKeys" empty-text="加载场景..."
+						 :node-key="'_id'" :expand-on-click-node="false" :filter-node-method="filterNode" ref="sceneTree" @node-click="handleNodeClick"
+						 style="min-width: 250px;height: 100%;overflow-x:hidden;overflow-y:auto;">
+							<span class="custom-tree-node" slot-scope="{ node, data }">
+								<span v-bind:style="{color: data.activeInHierarchy?'#606266':'#C0C4CC'}">{{ node.label }}</span>
+							</span>
+						</el-tree>
+						<el-button @click="handleRefreshTree" icon="el-icon-refresh" size="mini" style="position: absolute;right:0;top:0;"></el-button>
+					</div>
+					<div slot="bottom" class="demo-split-pane" style="background: white;min-width: 250px;height: 100%;padding:5px 0;overflow-x:hidden;overflow-y:auto;">
+						<div v-if="node">
+							<el-row style="margin:5px 0;">
+								<el-col :span="2" style="text-align:center;padding-top:7px;padding-left:5px;">
+									<el-checkbox v-model="node.active"></el-checkbox>
+								</el-col>
+								<el-col :span="20">
+									<el-input v-model="node.name" size="mini"></el-input>
+								</el-col>
+							</el-row>
+							<Collapse simple value="1">
+								<Panel name="1">
+									Node
+									<div slot="content">
+										<el-row style="height: 28px;margin-bottom:3px;">
+											<el-col :span="6" style="text-align: left;line-height: 28px;">Position</el-col>
+											<el-col :span="1" style="text-align: center; line-height: 28px;">X</el-col>
+											<el-col :span="8">
+												<el-input-number v-model="node.x" controls-position="right" size="mini" style="width: 100%;"></el-input-number>
+											</el-col>
+											<el-col :span="1" style="text-align: center;line-height: 28px;">Y</el-col>
+											<el-col :span="8">
+												<el-input-number v-model="node.y" controls-position="right" size="mini" style="width: 100%;"></el-input-number>
+											</el-col>
+										</el-row>
+										<el-row style="height: 28px;margin-bottom:3px;">
+											<el-col :span="6" style="text-align: left;line-height: 28px;">Angle</el-col>
+											<el-col :span="18">
+												<el-input-number v-model="node.angle" controls-position="right" size="mini" style="width: 100%;"></el-input-number>
+											</el-col>
+										</el-row>
+										<el-row style="height: 28px;margin-bottom:3px;">
+											<el-col :span="6" style="text-align: left;line-height: 28px;">Scale</el-col>
+											<el-col :span="1" style="text-align: center; line-height: 28px;">X</el-col>
+											<el-col :span="8">
+												<el-input-number v-model="node.scaleX" controls-position="right" size="mini" style="width: 100%;"></el-input-number>
+											</el-col>
+											<el-col :span="1" style="text-align: center;line-height: 28px;">Y</el-col>
+											<el-col :span="8">
+												<el-input-number v-model="node.scaleY" controls-position="right" size="mini" style="width: 100%;"></el-input-number>
+											</el-col>
+										</el-row>
+										<el-row style="height: 28px;margin-bottom:3px;">
+											<el-col :span="6" style="text-align: left;line-height: 28px;">Anchor</el-col>
+											<el-col :span="1" style="text-align: center; line-height: 28px;">X</el-col>
+											<el-col :span="8">
+												<el-input-number v-model="node.anchorX" controls-position="right" size="mini" style="width: 100%;"></el-input-number>
+											</el-col>
+											<el-col :span="1" style="text-align: center;line-height: 28px;">Y</el-col>
+											<el-col :span="8">
+												<el-input-number v-model="node.anchorY" controls-position="right" size="mini" style="width: 100%;"></el-input-number>
+											</el-col>
+										</el-row>
+										<el-row style="height: 28px;margin-bottom:3px;">
+											<el-col :span="6" style="text-align: left;line-height: 28px;">Size</el-col>
+											<el-col :span="1" style="text-align: center; line-height: 28px;">W</el-col>
+											<el-col :span="8">
+												<el-input-number v-model="node.width" controls-position="right" size="mini" style="width: 100%;"></el-input-number>
+											</el-col>
+											<el-col :span="1" style="text-align: center;line-height: 28px;">H</el-col>
+											<el-col :span="8">
+												<el-input-number v-model="node.height" controls-position="right" size="mini" style="width: 100%;"></el-input-number>
+											</el-col>
+										</el-row>
+										<el-row style="height: 28px;margin-bottom:3px;">
+											<el-col :span="6" style="text-align: left;line-height: 28px;">Color</el-col>
+											<el-col :span="18">
+												<el-color-picker size="mini" v-model="nodeColor" @change="handleColorChange"></el-color-picker>
+											</el-col>
+										</el-row>
+										<el-row style="height: 28px;margin-bottom:3px;">
+											<el-col :span="6" style="text-align: left;line-height: 28px;">Opacity</el-col>
+											<el-col :span="18">
+												<el-input-number v-model="node.opacity" controls-position="right" size="mini" style="width: 100%;"></el-input-number>
+											</el-col>
+										</el-row>
+										<el-row style="height: 28px;margin-bottom:3px;">
+											<el-col :span="6" style="text-align: left;line-height: 28px;">Skew</el-col>
+											<el-col :span="1" style="text-align: center; line-height: 28px;">X</el-col>
+											<el-col :span="8">
+												<el-input-number v-model="node.skewX" controls-position="right" size="mini" style="width: 100%;"></el-input-number>
+											</el-col>
+											<el-col :span="1" style="text-align: center;line-height: 28px;">Y</el-col>
+											<el-col :span="8">
+												<el-input-number v-model="node.skewY" controls-position="right" size="mini" style="width: 100%;"></el-input-number>
+											</el-col>
+										</el-row>
+										<el-row style="height: 28px;margin-bottom:0px;">
+											<el-col :span="6" style="text-align: left;line-height: 28px;">Group</el-col>
+											<el-col :span="18">
+												<el-input v-model="node.group" size="mini"></el-input>
+											</el-col>
+										</el-row>
+									</div>
+								</Panel>
+								<Panel name="2">
+									Components
+									<p slot="content">Coming soon...</p>
+								</Panel>
+							</Collapse>
+						</div>
+					</div>
+				</Split>
+			</div>
+		</Split>
+	</div>
+</div>
+
+<!-- <script type="text/javascript" charset="utf-8" src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script> -->
+<script type="text/javascript" charset="utf-8" src="app/editor/static/preview-templates/ccc-devtools/js/vue.js"></script>
+<!-- 引入组件库 -->
+<!-- <script src="https://unpkg.com/element-ui/lib/index.js"></script> -->
+<script src="app/editor/static/preview-templates/ccc-devtools/js/element-ui.js"></script>
+<!-- <script type="text/javascript" charset="utf-8" src="http://unpkg.com/iview/dist/iview.min.js"></script> -->
+<script type="text/javascript" charset="utf-8" src="app/editor/static/preview-templates/ccc-devtools/js/iview.js"></script>
+
+<script>
+	var app = new Vue({
+		el: '#app',
+		data: {
+			filterText: '',
+			splitLeft: 0.7,
+			splitRight: 0.5,
+			defaultExpandedKeys: [],
+			sceneTreeData: [],
+			nodeProps: {
+				children: 'children',
+				label: 'name'
+			},
+			node: null,
+			nodeColor: '#ffffff',
+
+		},
+		methods: {
+			handleRefreshTree() {
+				this.$data.sceneTreeData = [];
+				setTimeout(() => {
+					this.$data.sceneTreeData = cc.director.getScene().children;
+					this.defaultExpandedKeys = [this.$data.sceneTreeData[0]._id];
+				}, 0);
+			},
+			handleNodeClick(node) {
+				this.$data.node = node;
+				this.$data.nodeColor = '#' + node.color.toHEX();
+				let superPreLoad = node._onPreDestroy;
+				node._onPreDestroy = () => {
+					superPreLoad.apply(node);
+					if (this.$data && this.$data.node === node) {
+						this.$data.node = null;
+					}
+				}
+			},
+			handleColorChange(data) {
+				this.$data.node.color = new cc.Color().fromHEX(data);
+			},
+			filterNode(value, node) {
+				if (!value) return true;
+				return node.name.toLowerCase().indexOf(value.toLowerCase()) !== -1;
+			}
+		},
+		watch: {
+			filterText(val) {
+				this.$refs.sceneTree.filter(val);
+			}
+		},
+		created: function() {
+			let top = document.getElementById('top')
+			// top.insertBefore(document.getElementsByClassName('toolbar')[0], top.firstChild);
+			top.appendChild(document.getElementsByClassName('toolbar')[0]);
+			document.getElementById('game_panel').appendChild(document.getElementById('content'));
+// 			let content = document.getElementById('content');
+			// content.insertBefore(document.getElementById('searchInput'), content.firstChild);
+
+			intervalId = setInterval(() => {
+				if (window.cc) {
+					cc.director.on(cc.Director.EVENT_AFTER_SCENE_LAUNCH, () => {
+						this.$data.sceneTreeData = cc.director.getScene().children;
+						this.defaultExpandedKeys = [this.$data.sceneTreeData[0]._id];
+					});
+					cc.director.on(cc.Director.EVENT_BEFORE_SCENE_LOADING, () => {
+						this.$data.sceneTreeData = [];
+						this.$data.node = null;
+					});
+					clearInterval(intervalId);
+				} else {
+					console.log('cc is not init');
+				}
+			}, 1000);
+		}
+	});
+</script>
