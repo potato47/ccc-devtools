@@ -23,7 +23,7 @@ Cocos Creator 网页调试器，运行时查看、修改节点树，实时更新
 
    ![t2](./screenshots/t2.png)
 
-3. 打开`index.jade`,找到`body`里最后一个`div`，在下面添加`include ./ccc-devtools/index.html`
+3. 打开`index.jade`,找到`body`里最后一个`div`，在下面添加`include ./ccc-devtools/index.html`，**注意用tab键与上面的div对齐**
 
    ![t3](./screenshots/t3.png)
 
