@@ -212,16 +212,21 @@
 				this.$refs.sceneTree.filter(val);
 			}
 		},
-		created: function() {
+		created: function () {
 			let top = document.getElementById('top')
 			// top.insertBefore(document.getElementsByClassName('toolbar')[0], top.firstChild);
 			top.appendChild(document.getElementsByClassName('toolbar')[0]);
 			document.getElementById('game_panel').appendChild(document.getElementById('content'));
-// 			let content = document.getElementById('content');
+			// let content = document.getElementById('content');
 			// content.insertBefore(document.getElementById('searchInput'), content.firstChild);
 
 			intervalId = setInterval(() => {
 				if (window.cc) {
+					let scene = cc.director.getScene();
+					if (scene) {
+						this.$data.sceneTreeData = scene.children;
+						this.defaultExpandedKeys = [this.$data.sceneTreeData[0]._id];
+					}
 					cc.director.on(cc.Director.EVENT_AFTER_SCENE_LAUNCH, () => {
 						this.$data.sceneTreeData = cc.director.getScene().children;
 						this.defaultExpandedKeys = [this.$data.sceneTreeData[0]._id];
