@@ -56,6 +56,9 @@
 								<el-col :span="20">
 									<el-input v-model="node.name" size="mini"></el-input>
 								</el-col>
+								<el-col :span="2">
+									<el-button icon="el-icon-search" @click="outputNodeHandler" size="mini" circle></el-button>
+								</el-col>
 							</el-row>
 							<Collapse simple value="1">
 								<Panel name="1">
@@ -152,14 +155,17 @@
 				</Split>
 			</div>
 		</Split>
-		<el-tooltip :content="'ccc-devtools@Next v1.1.0 https://github.com/potato47/ccc-devtools'" placement="top" style="position: absolute;bottom:10px;left:10px;width: 100;background:#333333;">
-		  <el-switch
-			v-model="isDevMode"
-			@change="handleChangeMode"
-			active-color="#13ce66"
-			inactive-color="gray">
-		  </el-switch>
-		</el-tooltip>
+		<div style="position: absolute;bottom:10px;left:10px;width: 200px;">
+			<el-switch
+				v-model="isDevMode"
+				@change="handleChangeMode"
+				active-color="#13ce66"
+				inactive-color="gray">
+			</el-switch>
+			<el-tooltip :content="'ccc-devtools@Next v1.2.0'" placement="top">
+				<Icon type="logo-github" size="24" @click="openGithub"/>
+			</el-tooltip>
+		</div>
 	</div>
 </div>
 
@@ -211,6 +217,21 @@
 			},
 			handleColorChange(data) {
 				this.$data.node.color = new cc.Color().fromHEX(data);
+			},
+			outputNodeHandler(target) {
+				let i = 1;
+				while(window['temp'+i] !== undefined) {
+					i++;
+				}
+				window['temp'+i] = this.$data.node;
+				console.log('temp' + i);
+				console.log(window['temp'+i]);
+			},
+			outputComponentHandler(target) {
+				// TODO
+			},
+			openGithub() {
+				window.open('https://github.com/potato47/ccc-devtools');
 			},
 			filterNode(value, node) {
 				if (!value) return true;
