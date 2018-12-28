@@ -1,4 +1,4 @@
-# ccc-devtools v1.1.0
+# ccc-devtools v1.2.1
 Cocos Creator 网页调试器，运行时查看、修改节点树，实时更新节点属性。
 
 ## TODO
@@ -8,12 +8,21 @@ Cocos Creator 网页调试器，运行时查看、修改节点树，实时更新
 - [x] 实时刷新节点信息
 - [x] 拖动节点更改层级
 - [x] 开关
+- [x] 控制台输出节点信息
 - [ ] 自定义布局等配置
 - [ ] 组件信息
 
 ## 预览
 
 ![preview](./screenshots/preview.gif)
+
+v1.1.0: 拖拽节点，增加开关
+
+![t5](./screenshots/t4.gif)
+
+v1.2.0: 控制台输出节点信息
+
+![t6](./screenshots/t5.png)
 
 ## 使用
 
