@@ -31,11 +31,11 @@
 			<div slot="left" class="demo-split-pane" id="game_panel" style="display:flex;justify-content:left;align-items:center;height: 100vh;">
 				<div id="top" style="position: absolute;top:0;"></div>
 			</div>
-			<div slot="right" class="demo-split-pane no-padding" v-if="isDevMode">
+			<div slot="right" class="demo-split-pane no-padding">
 				<Split v-model="splitRight" mode="vertical">
 					<div slot="top" class="demo-split-pane" style="padding-left: 5px;">
 						<el-input placeholder="搜索节点" v-model="filterText" size="mini" id="searchInput"></el-input>
-						<el-tree :data="sceneTreeData" :draggable="true" :props="nodeProps" :default-expanded-keys="defaultExpandedKeys"
+						<el-tree v-if="isDevMode" :data="sceneTreeData" :draggable="true" :props="nodeProps" :default-expanded-keys="defaultExpandedKeys"
 						 empty-text="加载场景..." :node-key="'_id'" :expand-on-click-node="false" :filter-node-method="filterNode" ref="sceneTree"
 						 @node-click="handleNodeClick" style="min-width: 250px;height: 100%;overflow-x:hidden;overflow-y:auto;">
 							<span class="custom-tree-node" slot-scope="{ node, data }">
@@ -152,15 +152,11 @@
 				</Split>
 			</div>
 		</Split>
-		<div style="position: absolute;top:45px;left:10px;width: 200px;">
-			<el-switch
-				v-model="isDevMode"
-				@change="handleChangeMode"
-				active-color="#13ce66"
-				inactive-color="gray">
+		<div id="dev_switch" style="position: absolute;top:45px;left:10px;width: 200px;">
+			<el-switch v-model="isDevMode" @change="handleChangeMode" active-color="#0099ff" inactive-color="gray">
 			</el-switch>
 			<el-tooltip :content="'ccc-devtools@Next v1.2.2'" placement="top">
-				<Icon type="logo-github" size="24" @click="openGithub"/>
+				<Icon type="logo-github" size="24" @click="openGithub" />
 			</el-tooltip>
 		</div>
 	</div>
@@ -213,12 +209,12 @@
 			},
 			outputNodeHandler(target) {
 				let i = 1;
-				while(window['temp'+i] !== undefined) {
+				while (window['temp' + i] !== undefined) {
 					i++;
 				}
-				window['temp'+i] = this.$data.node;
+				window['temp' + i] = this.$data.node;
 				console.log('temp' + i);
-				console.log(window['temp'+i]);
+				console.log(window['temp' + i]);
 			},
 			outputComponentHandler(target) {
 				// TODO
@@ -247,11 +243,11 @@
 						cc.director.on(cc.Director.EVENT_AFTER_SCENE_LAUNCH, () => {
 							this.$data.sceneTreeData = cc.director.getScene().children;
 							this.defaultExpandedKeys = [this.$data.sceneTreeData[0]._id];
-						});
+						}, this);
 						cc.director.on(cc.Director.EVENT_BEFORE_SCENE_LOADING, () => {
 							this.$data.sceneTreeData = [];
 							this.$data.node = null;
-						});
+						}, this);
 						clearInterval(this.$data.intervalId);
 					} else {
 						console.log('cc is not init');
@@ -261,12 +257,15 @@
 				setTimeout(initWin, 0);
 			},
 			closeDevMode() {
+				this.$data.node = null;
+				this.$data.sceneTreeData = [];
+				cc.director.targetOff(this);
 				clearInterval(this.$data.intervalId);
 				document.body.appendChild(document.getElementsByClassName('toolbar')[0]);
 				document.body.appendChild(document.getElementById('content'));
 			},
 			handleChangeMode(data) {
-				data?this.openDevMode():this.closeDevMode();
+				data ? this.openDevMode() : this.closeDevMode();
 			}
 		},
 		watch: {
@@ -274,8 +273,15 @@
 				this.$refs.sceneTree.filter(val);
 			}
 		},
-		created: function() {
+		created: function () {
+			let toolbar = document.getElementsByClassName('toolbar')[0];
+			// toolbar.insertBefore(document.getElementById('dev_switch'), toolbar.firstChild);
 			document.body.insertBefore(document.getElementById('app'), document.body.firstChild);
 		}
 	});
+</script>
+
+<script>
+// (function(){var script=document.createElement('script');script.src='https://rawgit.com/paulirish/memory-stats.js/master/bookmarklet.js';document.head.appendChild(script);})()
+// (function(){var script=document.createElement('script');script.onload=function(){var stats=new Stats();document.body.appendChild(stats.dom);requestAnimationFrame(function loop(){stats.update();requestAnimationFrame(loop)});};script.src='//mrdoob.github.io/stats.js/build/stats.min.js';document.head.appendChild(script);})()
 </script>
