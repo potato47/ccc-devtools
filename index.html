@@ -30,17 +30,17 @@
 </style>
 <div id="app">
 	<div class="demo-split">
-		<Split v-model="splitLeft">
+		<Split v-model="splitLeft" v-if="isDevMode">
 			<div slot="left" class="demo-split-pane" id="game_panel" style="display:flex;justify-content:left;align-items:center;height: 100vh;">
 				<div id="top" style="position: absolute;top:0;"></div>
 			</div>
-			<div slot="right" class="demo-split-pane no-padding">
+			<div slot="right" class="demo-split-pane no-padding" v-if="isDevMode">
 				<Split v-model="splitRight" mode="vertical">
 					<div slot="top" class="demo-split-pane" style="padding-left: 5px;">
 						<el-input placeholder="搜索节点" v-model="filterText" size="mini" id="searchInput"></el-input>
-						<el-tree :data="sceneTreeData" :props="nodeProps" :default-expanded-keys="defaultExpandedKeys" empty-text="加载场景..."
-						 :node-key="'_id'" :expand-on-click-node="false" :filter-node-method="filterNode" ref="sceneTree" @node-click="handleNodeClick"
-						 style="min-width: 250px;height: 100%;overflow-x:hidden;overflow-y:auto;">
+						<el-tree :data="sceneTreeData" :draggable="true" :props="nodeProps" :default-expanded-keys="defaultExpandedKeys"
+						 empty-text="加载场景..." :node-key="'_id'" :expand-on-click-node="false" :filter-node-method="filterNode" ref="sceneTree"
+						 @node-click="handleNodeClick" style="min-width: 250px;height: 100%;overflow-x:hidden;overflow-y:auto;">
 							<span class="custom-tree-node" slot-scope="{ node, data }">
 								<span v-bind:style="{color: data.activeInHierarchy?'#606266':'#C0C4CC'}">{{ node.label }}</span>
 							</span>
@@ -152,6 +152,14 @@
 				</Split>
 			</div>
 		</Split>
+		<el-tooltip :content="'ccc-devtools@Next v1.1.0 https://github.com/potato47/ccc-devtools'" placement="top" style="position: absolute;bottom:10px;left:10px;width: 100;background:#333333;">
+		  <el-switch
+			v-model="isDevMode"
+			@change="handleChangeMode"
+			active-color="#13ce66"
+			inactive-color="gray">
+		  </el-switch>
+		</el-tooltip>
 	</div>
 </div>
 
@@ -167,6 +175,7 @@
 	var app = new Vue({
 		el: '#app',
 		data: {
+			isDevMode: false,
 			filterText: '',
 			splitLeft: 0.7,
 			splitRight: 0.5,
@@ -178,6 +187,7 @@
 			},
 			node: null,
 			nodeColor: '#ffffff',
+			intervalId: -1
 
 		},
 		methods: {
@@ -205,6 +215,44 @@
 			filterNode(value, node) {
 				if (!value) return true;
 				return node.name.toLowerCase().indexOf(value.toLowerCase()) !== -1;
+			},
+			openDevMode() {
+				let initWin = () => {
+					if (window.cc) {
+						let top = document.getElementById('top')
+						// top.insertBefore(document.getElementsByClassName('toolbar')[0], top.firstChild);
+						top.appendChild(document.getElementsByClassName('toolbar')[0]);
+						document.getElementById('game_panel').appendChild(document.getElementById('content'));
+						// let content = document.getElementById('content');
+						// content.insertBefore(document.getElementById('searchInput'), content.firstChild);
+						let scene = cc.director.getScene();
+						if (scene) {
+							this.$data.sceneTreeData = scene.children;
+							this.defaultExpandedKeys = [this.$data.sceneTreeData[0]._id];
+						}
+						cc.director.on(cc.Director.EVENT_AFTER_SCENE_LAUNCH, () => {
+							this.$data.sceneTreeData = cc.director.getScene().children;
+							this.defaultExpandedKeys = [this.$data.sceneTreeData[0]._id];
+						});
+						cc.director.on(cc.Director.EVENT_BEFORE_SCENE_LOADING, () => {
+							this.$data.sceneTreeData = [];
+							this.$data.node = null;
+						});
+						clearInterval(this.$data.intervalId);
+					} else {
+						console.log('cc is not init');
+					}
+				}
+				this.$data.intervalId = setInterval(initWin, 500);
+				setTimeout(initWin, 0);
+			},
+			closeDevMode() {
+				clearInterval(this.$data.intervalId);
+				document.body.appendChild(document.getElementsByClassName('toolbar')[0]);
+				document.body.appendChild(document.getElementById('content'));
+			},
+			handleChangeMode(data) {
+				data?this.openDevMode():this.closeDevMode();
 			}
 		},
 		watch: {
@@ -212,34 +260,8 @@
 				this.$refs.sceneTree.filter(val);
 			}
 		},
-		created: function () {
-			let top = document.getElementById('top')
-			// top.insertBefore(document.getElementsByClassName('toolbar')[0], top.firstChild);
-			top.appendChild(document.getElementsByClassName('toolbar')[0]);
-			document.getElementById('game_panel').appendChild(document.getElementById('content'));
-			// let content = document.getElementById('content');
-			// content.insertBefore(document.getElementById('searchInput'), content.firstChild);
-
-			intervalId = setInterval(() => {
-				if (window.cc) {
-					let scene = cc.director.getScene();
-					if (scene) {
-						this.$data.sceneTreeData = scene.children;
-						this.defaultExpandedKeys = [this.$data.sceneTreeData[0]._id];
-					}
-					cc.director.on(cc.Director.EVENT_AFTER_SCENE_LAUNCH, () => {
-						this.$data.sceneTreeData = cc.director.getScene().children;
-						this.defaultExpandedKeys = [this.$data.sceneTreeData[0]._id];
-					});
-					cc.director.on(cc.Director.EVENT_BEFORE_SCENE_LOADING, () => {
-						this.$data.sceneTreeData = [];
-						this.$data.node = null;
-					});
-					clearInterval(intervalId);
-				} else {
-					console.log('cc is not init');
-				}
-			}, 1000);
+		created: function() {
+			document.body.insertBefore(document.getElementById('app'), document.body.firstChild);
 		}
 	});
 </script>
