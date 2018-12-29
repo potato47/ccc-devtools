@@ -1,5 +1,6 @@
 <link rel="stylesheet" href="app/editor/static/preview-templates/ccc-devtools/css/element-ui.css">
 <link rel="stylesheet" href="app/editor/static/preview-templates/ccc-devtools/css/iview.css">
+<link rel="stylesheet" href="app/editor/static/preview-templates/ccc-devtools/css/vue-beauty.min.css">
 
 <style>
 	body {
@@ -35,9 +36,10 @@
 				<Split v-model="splitRight" mode="vertical">
 					<div slot="top" class="demo-split-pane" style="padding-left: 5px;">
 						<el-input placeholder="搜索节点" v-model="filterText" size="mini" id="searchInput"></el-input>
-						<el-tree v-if="isDevMode" :data="sceneTreeData" :draggable="true" :props="nodeProps" :default-expanded-keys="defaultExpandedKeys"
-						 empty-text="加载场景..." :node-key="'_id'" :expand-on-click-node="false" :filter-node-method="filterNode" ref="sceneTree"
-						 @node-click="handleNodeClick" style="min-width: 250px;height: 100%;overflow-x:hidden;overflow-y:auto;">
+						<!-- <v-tree :data="sceneTreeData" showLine draggable @select="testCheck" style="min-width: 250px;height: 100%;overflow-x:hidden;overflow-y:auto;background: white;"></v-tree> -->
+						<el-tree v-if="isDevMode" :data="sceneTreeData" :draggable="true" :props="nodeProps"
+						:default-expanded-keys="defaultExpandedKeys" empty-text="暂无数据..." :node-key="'_id'" :expand-on-click-node="false"
+						 :filter-node-method="filterNode" ref="sceneTree" @node-click="handleNodeClick" style="min-width: 250px;height: 100%;overflow-x:hidden;overflow-y:auto;">
 							<span class="custom-tree-node" slot-scope="{ node, data }">
 								<span v-bind:style="{color: data.activeInHierarchy?'#606266':'#C0C4CC'}">{{ node.label }}</span>
 							</span>
@@ -57,87 +59,17 @@
 									<el-button icon="el-icon-search" @click="outputNodeHandler" size="mini" circle></el-button>
 								</el-col>
 							</el-row>
-							<Collapse simple value="1">
-								<Panel name="1">
-									Node
+							<Collapse simple value="0">
+								<Panel :name="index+''" v-for="(section,index) in propSchema" :key="section.key">
+									{{ section.title }}
 									<div slot="content">
-										<el-row style="height: 28px;margin-bottom:3px;">
-											<el-col :span="6" style="text-align: left;line-height: 28px;">Position</el-col>
-											<el-col :span="1" style="text-align: center; line-height: 28px;">X</el-col>
-											<el-col :span="8">
-												<el-input-number v-model="node.x" controls-position="right" size="mini" style="width: 100%;"></el-input-number>
-											</el-col>
-											<el-col :span="1" style="text-align: center;line-height: 28px;">Y</el-col>
-											<el-col :span="8">
-												<el-input-number v-model="node.y" controls-position="right" size="mini" style="width: 100%;"></el-input-number>
-											</el-col>
-										</el-row>
-										<el-row style="height: 28px;margin-bottom:3px;">
-											<el-col :span="6" style="text-align: left;line-height: 28px;">Angle</el-col>
-											<el-col :span="18">
-												<el-input-number v-model="node.angle" controls-position="right" size="mini" style="width: 100%;"></el-input-number>
-											</el-col>
-										</el-row>
-										<el-row style="height: 28px;margin-bottom:3px;">
-											<el-col :span="6" style="text-align: left;line-height: 28px;">Scale</el-col>
-											<el-col :span="1" style="text-align: center; line-height: 28px;">X</el-col>
-											<el-col :span="8">
-												<el-input-number v-model="node.scaleX" controls-position="right" size="mini" style="width: 100%;"></el-input-number>
-											</el-col>
-											<el-col :span="1" style="text-align: center;line-height: 28px;">Y</el-col>
-											<el-col :span="8">
-												<el-input-number v-model="node.scaleY" controls-position="right" size="mini" style="width: 100%;"></el-input-number>
-											</el-col>
-										</el-row>
-										<el-row style="height: 28px;margin-bottom:3px;">
-											<el-col :span="6" style="text-align: left;line-height: 28px;">Anchor</el-col>
-											<el-col :span="1" style="text-align: center; line-height: 28px;">X</el-col>
-											<el-col :span="8">
-												<el-input-number v-model="node.anchorX" controls-position="right" size="mini" style="width: 100%;"></el-input-number>
-											</el-col>
-											<el-col :span="1" style="text-align: center;line-height: 28px;">Y</el-col>
-											<el-col :span="8">
-												<el-input-number v-model="node.anchorY" controls-position="right" size="mini" style="width: 100%;"></el-input-number>
-											</el-col>
-										</el-row>
-										<el-row style="height: 28px;margin-bottom:3px;">
-											<el-col :span="6" style="text-align: left;line-height: 28px;">Size</el-col>
-											<el-col :span="1" style="text-align: center; line-height: 28px;">W</el-col>
-											<el-col :span="8">
-												<el-input-number v-model="node.width" controls-position="right" size="mini" style="width: 100%;"></el-input-number>
-											</el-col>
-											<el-col :span="1" style="text-align: center;line-height: 28px;">H</el-col>
-											<el-col :span="8">
-												<el-input-number v-model="node.height" controls-position="right" size="mini" style="width: 100%;"></el-input-number>
-											</el-col>
-										</el-row>
-										<el-row style="height: 28px;margin-bottom:3px;">
-											<el-col :span="6" style="text-align: left;line-height: 28px;">Color</el-col>
-											<el-col :span="18">
-												<el-color-picker size="mini" v-model="nodeColor" @change="handleColorChange"></el-color-picker>
-											</el-col>
-										</el-row>
-										<el-row style="height: 28px;margin-bottom:3px;">
-											<el-col :span="6" style="text-align: left;line-height: 28px;">Opacity</el-col>
-											<el-col :span="18">
-												<el-input-number v-model="node.opacity" controls-position="right" size="mini" style="width: 100%;"></el-input-number>
-											</el-col>
-										</el-row>
-										<el-row style="height: 28px;margin-bottom:3px;">
-											<el-col :span="6" style="text-align: left;line-height: 28px;">Skew</el-col>
-											<el-col :span="1" style="text-align: center; line-height: 28px;">X</el-col>
-											<el-col :span="8">
-												<el-input-number v-model="node.skewX" controls-position="right" size="mini" style="width: 100%;"></el-input-number>
-											</el-col>
-											<el-col :span="1" style="text-align: center;line-height: 28px;">Y</el-col>
-											<el-col :span="8">
-												<el-input-number v-model="node.skewY" controls-position="right" size="mini" style="width: 100%;"></el-input-number>
-											</el-col>
-										</el-row>
-										<el-row style="height: 28px;margin-bottom:0px;">
-											<el-col :span="6" style="text-align: left;line-height: 28px;">Group</el-col>
-											<el-col :span="18">
-												<el-input v-model="node.group" size="mini"></el-input>
+										<el-row style="height: 28px;margin-bottom:3px;" v-for="row in section.rows" :key="row.key">
+											<el-col v-for="col in row" :key="col.key" :span="col.span" style="text-align: left;line-height: 28px;">
+												<span v-if="col.type == 'label'">{{col.value}}</span>
+												<el-input-number v-if="col.type == 'number'" v-model="node[col.field]" controls-position="right" size="mini"
+												 style="width: 100%;"></el-input-number>
+												<el-input v-if="col.type == 'input'" v-model="node[col.field]" size="mini"></el-input>
+												<el-color-picker v-if="col.type == 'color'" :ref="col.key" size="mini" v-model="node[col.field]"></el-color-picker>
 											</el-col>
 										</el-row>
 									</div>
@@ -155,7 +87,7 @@
 		<div id="dev_switch" style="position: absolute;top:45px;left:10px;width: 200px;">
 			<el-switch v-model="isDevMode" @change="handleChangeMode" active-color="#0099ff" inactive-color="gray">
 			</el-switch>
-			<el-tooltip :content="'ccc-devtools@Next v1.2.4'" placement="top">
+			<el-tooltip :content="'ccc-devtools@Next v1.2.5'" placement="top">
 				<Icon type="logo-github" size="24" @click="openGithub" />
 			</el-tooltip>
 		</div>
@@ -165,7 +97,9 @@
 <script type="text/javascript" charset="utf-8" src="app/editor/static/preview-templates/ccc-devtools/js/vue.js"></script>
 <script src="app/editor/static/preview-templates/ccc-devtools/js/element-ui.js"></script>
 <script type="text/javascript" charset="utf-8" src="app/editor/static/preview-templates/ccc-devtools/js/iview.js"></script>
+<script type="text/javascript" charset="utf-8" src="app/editor/static/preview-templates/ccc-devtools/js/vue-beauty.min.js"></script>
 
+<script type="text/javascript" src="app/editor/static/preview-templates/ccc-devtools/config.js"></script>
 <script>
 	var app = new Vue({
 		el: '#app',
@@ -178,12 +112,12 @@
 			sceneTreeData: [],
 			nodeProps: {
 				children: 'children',
-				label: 'name'
+				label: 'name',
+				isLeaf: 'leaf'
 			},
 			node: null,
-			nodeColor: '#ffffff',
-			intervalId: -1
-
+			propSchema: [],
+			intervalId: -1,
 		},
 		methods: {
 			handleRefreshTree() {
@@ -194,8 +128,13 @@
 				}, 0);
 			},
 			handleNodeClick(node) {
+				this.$data.propSchema = [];
 				this.$data.node = node;
-				this.$data.nodeColor = '#' + node.color.toHEX();
+				cc.js.getset(this.$data.node, 'hex_color', () => {
+					return '#' + this.$data.node.color.toHEX();
+				}, (hex) => {
+					this.$data.node.color = new cc.Color().fromHEX(hex);
+				});
 				let superPreLoad = node._onPreDestroy;
 				node._onPreDestroy = () => {
 					superPreLoad.apply(node);
@@ -203,9 +142,7 @@
 						this.$data.node = null;
 					}
 				}
-			},
-			handleColorChange(data) {
-				this.$data.node.color = new cc.Color().fromHEX(data);
+				this.$data.propSchema = [NEX_CONFIG.propSchema.node2d];
 			},
 			outputNodeHandler(target) {
 				let i = 1;
@@ -229,6 +166,9 @@
 			openDevMode() {
 				let initWin = () => {
 					if (window.cc) {
+						cc.js.getset(cc.Node.prototype, 'leaf', function () {
+							return this.childrenCount === 0;
+						});
 						let top = document.getElementById('top')
 						top.appendChild(document.getElementsByClassName('toolbar')[0]);
 						document.getElementById('game_panel').appendChild(document.getElementById('content'));
@@ -265,7 +205,7 @@
 			},
 			handleChangeMode(data) {
 				data ? this.openDevMode() : this.closeDevMode();
-			}
+			},
 		},
 		watch: {
 			filterText(val) {
@@ -285,6 +225,6 @@
 </script>
 
 <script>
-// (function(){var script=document.createElement('script');script.src='https://rawgit.com/paulirish/memory-stats.js/master/bookmarklet.js';document.head.appendChild(script);})()
-// (function(){var script=document.createElement('script');script.onload=function(){var stats=new Stats();document.body.appendChild(stats.dom);requestAnimationFrame(function loop(){stats.update();requestAnimationFrame(loop)});};script.src='//mrdoob.github.io/stats.js/build/stats.min.js';document.head.appendChild(script);})()
+	// (function(){var script=document.createElement('script');script.src='https://rawgit.com/paulirish/memory-stats.js/master/bookmarklet.js';document.head.appendChild(script);})()
+	// (function(){var script=document.createElement('script');script.onload=function(){var stats=new Stats();document.body.appendChild(stats.dom);requestAnimationFrame(function loop(){stats.update();requestAnimationFrame(loop)});};script.src='//mrdoob.github.io/stats.js/build/stats.min.js';document.head.appendChild(script);})()
 </script>
