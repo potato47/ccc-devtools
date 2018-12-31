@@ -35,15 +35,15 @@
 			<div slot="right" class="demo-split-pane no-padding">
 				<Split v-model="splitRight" mode="vertical">
 					<div slot="top" class="demo-split-pane" style="padding-left: 5px;">
-						<el-input placeholder="搜索节点" v-model="filterText" size="mini" id="searchInput"></el-input>
-						<!-- <v-tree :data="sceneTreeData" showLine draggable @select="testCheck" style="min-width: 250px;height: 100%;overflow-x:hidden;overflow-y:auto;background: white;"></v-tree> -->
-						<el-tree v-if="isDevMode" :data="sceneTreeData" :draggable="true" :props="nodeProps"
-						:default-expanded-keys="defaultExpandedKeys" empty-text="暂无数据..." :node-key="'_id'" :expand-on-click-node="false"
-						 :filter-node-method="filterNode" ref="sceneTree" @node-click="handleNodeClick" style="min-width: 250px;height: 100%;overflow-x:hidden;overflow-y:auto;">
+						<!-- <el-input placeholder="搜索节点" v-model="filterText" size="mini" id="searchInput"></el-input> -->
+						<v-tree :data="sceneTreeData" @select="handleNodesSelect" style="min-width: 250px;height: 100%;overflow-x:hidden;overflow-y:auto;background: white;"></v-tree>
+						<!-- <el-tree v-if="isDevMode" :data="sceneTreeData" :draggable="true" :props="nodeProps" :default-expanded-keys="defaultExpandedKeys"
+						 empty-text="暂无数据..." :node-key="'_id'" :expand-on-click-node="false" :filter-node-method="filterNode" ref="sceneTree"
+						 @node-click="handleNodeClick" style="min-width: 250px;height: 100%;overflow-x:hidden;overflow-y:auto;">
 							<span class="custom-tree-node" slot-scope="{ node, data }">
 								<span v-bind:style="{color: data.activeInHierarchy?'#606266':'#C0C4CC'}">{{ node.label }}</span>
 							</span>
-						</el-tree>
+						</el-tree> -->
 						<el-button @click="handleRefreshTree" icon="el-icon-refresh" size="mini" style="position: absolute;right:0;top:0;"></el-button>
 					</div>
 					<div slot="bottom" class="demo-split-pane" style="background: white;min-width: 250px;height: 100%;padding:5px 0;overflow-x:hidden;overflow-y:auto;">
@@ -87,7 +87,7 @@
 		<div id="dev_switch" style="position: absolute;top:45px;left:10px;width: 200px;">
 			<el-switch v-model="isDevMode" @change="handleChangeMode" active-color="#0099ff" inactive-color="gray">
 			</el-switch>
-			<el-tooltip :content="'ccc-devtools@Next v1.2.5'" placement="top">
+			<el-tooltip :content="'ccc-devtools@Next v1.2.6'" placement="top">
 				<Icon type="logo-github" size="24" @click="openGithub" />
 			</el-tooltip>
 		</div>
@@ -127,22 +127,33 @@
 					this.defaultExpandedKeys = [this.$data.sceneTreeData[0]._id];
 				}, 0);
 			},
-			handleNodeClick(node) {
-				this.$data.propSchema = [];
-				this.$data.node = node;
-				cc.js.getset(this.$data.node, 'hex_color', () => {
-					return '#' + this.$data.node.color.toHEX();
-				}, (hex) => {
-					this.$data.node.color = new cc.Color().fromHEX(hex);
-				});
-				let superPreLoad = node._onPreDestroy;
-				node._onPreDestroy = () => {
-					superPreLoad.apply(node);
-					if (this.$data && this.$data.node === node) {
-						this.$data.node = null;
-					}
+			handleNodesSelect(nodes) {
+				if (nodes.length === 1) {
+					this.handleNodeClick(nodes[0]);
+				} else {
+					this.handleNodeClick(null);
 				}
-				this.$data.propSchema = [NEX_CONFIG.propSchema.node2d];
+			},
+			handleNodeClick(node) {
+				if (node) {
+					this.$data.propSchema = [];
+					this.$data.node = node;
+					cc.js.getset(node, 'hex_color', () => {
+						return '#' + node.color.toHEX();
+					}, (hex) => {
+						node.color = new cc.Color().fromHEX(hex);
+					}, false, true);
+					let superPreLoad = node._onPreDestroy;
+					node._onPreDestroy = () => {
+						superPreLoad.apply(node);
+						if (this.$data && this.$data.node === node) {
+							this.$data.node = null;
+						}
+					}
+					this.$data.propSchema = [NEX_CONFIG.propSchema.node2d];
+				} else {
+					this.$data.node = null;
+				}
 			},
 			outputNodeHandler(target) {
 				let i = 1;
@@ -186,6 +197,7 @@
 							this.$data.node = null;
 						}, this);
 						clearInterval(this.$data.intervalId);
+						console.log('ccc-devtools init');
 					} else {
 						// console.log('cc is not init');
 					}
