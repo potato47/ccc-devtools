@@ -36,7 +36,7 @@
 				<Split v-model="splitRight" mode="vertical">
 					<div slot="top" class="demo-split-pane" style="padding-left: 5px;">
 						<!-- <el-input placeholder="搜索节点" v-model="filterText" size="mini" id="searchInput"></el-input> -->
-						<v-tree :data="sceneTreeData" @select="handleNodesSelect" style="min-width: 250px;height: 100%;overflow-x:hidden;overflow-y:auto;background: white;"></v-tree>
+						<v-tree :data="sceneTreeData" ref="sceneTree" @select="handleNodesSelect" style="min-width: 250px;height: 100%;overflow-x:hidden;overflow-y:auto;background: white;"></v-tree>
 						<!-- <el-tree v-if="isDevMode" :data="sceneTreeData" :draggable="true" :props="nodeProps" :default-expanded-keys="defaultExpandedKeys"
 						 empty-text="暂无数据..." :node-key="'_id'" :expand-on-click-node="false" :filter-node-method="filterNode" ref="sceneTree"
 						 @node-click="handleNodeClick" style="min-width: 250px;height: 100%;overflow-x:hidden;overflow-y:auto;">
@@ -44,7 +44,7 @@
 								<span v-bind:style="{color: data.activeInHierarchy?'#606266':'#C0C4CC'}">{{ node.label }}</span>
 							</span>
 						</el-tree> -->
-						<el-button @click="handleRefreshTree" icon="el-icon-refresh" size="mini" style="position: absolute;right:0;top:0;"></el-button>
+						<!-- <el-button @click="handleRefreshTree" icon="el-icon-refresh" size="mini" style="position: absolute;right:0;top:0;"></el-button> -->
 					</div>
 					<div slot="bottom" class="demo-split-pane" style="background: white;min-width: 250px;height: 100%;padding:5px 0;overflow-x:hidden;overflow-y:auto;">
 						<div v-if="node">
@@ -84,23 +84,84 @@
 				</Split>
 			</div>
 		</Split>
-		<div id="dev_switch" style="position: absolute;top:45px;left:10px;width: 200px;">
-			<el-switch v-model="isDevMode" @change="handleChangeMode" active-color="#0099ff" inactive-color="gray">
-			</el-switch>
-			<el-tooltip :content="'ccc-devtools@Next v1.2.6'" placement="top">
-				<Icon type="logo-github" size="24" @click="openGithub" />
-			</el-tooltip>
-		</div>
+		<el-popover style="position:absolute;left:5px;top:50px;" width="150" placement="top-start" trigger="click">
+			<el-button type="info" icon="el-icon-setting" circle slot="reference" size="mini"></el-button>
+			<div>
+				<el-row style="margin:5px 0;">
+					<el-col :span="12" style="text-align:left;padding-top:7px;padding-left:5px;">
+						节点树
+					</el-col>
+					<el-col :span="12">
+						<el-switch style="margin: 5px;" v-model="isDevMode" @change="handleChangeMode" active-color="#0099ff"
+						 inactive-color="gray">
+						</el-switch>
+					</el-col>
+				</el-row>
+				<!-- <el-row style="margin:5px 0;">
+					<el-col :span="12" style="text-align:left;padding-top:7px;padding-left:5px;">
+						FPS
+					</el-col>
+					<el-col :span="12">
+						<el-switch style="margin: 5px;" v-model="isDevMode" @change="handleChangeMode" active-color="#0099ff"
+						 inactive-color="gray">
+						</el-switch>
+					</el-col>
+				</el-row>
+				<el-row style="margin:5px 0;">
+					<el-col :span="12" style="text-align:left;padding-top:7px;padding-left:5px;">
+						帧时间
+					</el-col>
+					<el-col :span="12">
+						<el-switch style="margin: 5px;" v-model="isDevMode" @change="handleChangeMode" active-color="#0099ff"
+						 inactive-color="gray">
+						</el-switch>
+					</el-col>
+				</el-row>
+				<el-row style="margin:5px 0;">
+					<el-col :span="12" style="text-align:left;padding-top:7px;padding-left:5px;">
+						内存
+					</el-col>
+					<el-col :span="12">
+						<el-switch style="margin: 5px;" v-model="isDevMode" @change="handleChangeMode" active-color="#0099ff"
+						 inactive-color="gray">
+						</el-switch>
+					</el-col>
+				</el-row> -->
+				<el-row style="margin:5px 0;">
+					<el-col :span="12" style="text-align:left;padding-top:7px;padding-left:5px;">
+						源码
+					</el-col>
+					<el-col :span="12">
+						<Icon style="margin: 5px;" type="logo-github" size="24" @click="openGithub" />
+					</el-col>
+				</el-row>
+			</div>
+		</el-popover>
 	</div>
 </div>
 
-<script type="text/javascript" charset="utf-8" src="app/editor/static/preview-templates/ccc-devtools/js/vue.js"></script>
+<script type="text/javascript" charset="utf-8" src="app/editor/static/preview-templates/ccc-devtools/js/vue.min.js"></script>
 <script src="app/editor/static/preview-templates/ccc-devtools/js/element-ui.js"></script>
 <script type="text/javascript" charset="utf-8" src="app/editor/static/preview-templates/ccc-devtools/js/iview.js"></script>
 <script type="text/javascript" charset="utf-8" src="app/editor/static/preview-templates/ccc-devtools/js/vue-beauty.min.js"></script>
+<script type="text/javascript" charset="utf-8" src="app/editor/static/preview-templates/ccc-devtools/js/stats.min.js"></script>
 
 <script type="text/javascript" src="app/editor/static/preview-templates/ccc-devtools/config.js"></script>
 <script>
+	var nex = {
+		checkVersion: function () {
+			var url = 'https://raw.githubusercontent.com/potato47/ccc-devtools/master/config.js';
+			var xhr = new XMLHttpRequest();
+			xhr.onreadystatechange = function () {
+				if (xhr.readyState == 4 && (xhr.status >= 200 && xhr.status < 400)) {
+					var response = xhr.responseText;
+					console.log(response);
+				}
+			};
+			xhr.open("GET", url, true);
+			xhr.send();
+		}
+	}
 	var app = new Vue({
 		el: '#app',
 		data: {
@@ -123,9 +184,12 @@
 			handleRefreshTree() {
 				this.$data.sceneTreeData = [];
 				setTimeout(() => {
-					this.$data.sceneTreeData = cc.director.getScene().children;
-					this.defaultExpandedKeys = [this.$data.sceneTreeData[0]._id];
+					this.updateTreeData();
 				}, 0);
+			},
+			updateTreeData() {
+				this.$data.sceneTreeData = cc.director.getScene().children;
+				this.defaultExpandedKeys = [this.$data.sceneTreeData[0]._id];
 			},
 			handleNodesSelect(nodes) {
 				if (nodes.length === 1) {
@@ -177,24 +241,24 @@
 			openDevMode() {
 				let initWin = () => {
 					if (window.cc) {
-						cc.js.getset(cc.Node.prototype, 'leaf', function () {
+						cc.js.getset(cc.Node.prototype, 'isLeaf', function () {
 							return this.childrenCount === 0;
-						});
+						}, function (value) {
+
+						}, false, true);
 						let top = document.getElementById('top')
 						top.appendChild(document.getElementsByClassName('toolbar')[0]);
 						document.getElementById('game_panel').appendChild(document.getElementById('content'));
 						let scene = cc.director.getScene();
 						if (scene) {
-							this.$data.sceneTreeData = scene.children;
-							this.defaultExpandedKeys = [this.$data.sceneTreeData[0]._id];
+							this.updateTreeData();
 						}
 						cc.director.on(cc.Director.EVENT_AFTER_SCENE_LAUNCH, () => {
-							this.$data.sceneTreeData = cc.director.getScene().children;
-							this.defaultExpandedKeys = [this.$data.sceneTreeData[0]._id];
+							this.updateTreeData();
 						}, this);
 						cc.director.on(cc.Director.EVENT_BEFORE_SCENE_LOADING, () => {
-							this.$data.sceneTreeData = [];
 							this.$data.node = null;
+							this.$data.sceneTreeData = [];
 						}, this);
 						clearInterval(this.$data.intervalId);
 						console.log('ccc-devtools init');
@@ -237,6 +301,54 @@
 </script>
 
 <script>
-	// (function(){var script=document.createElement('script');script.src='https://rawgit.com/paulirish/memory-stats.js/master/bookmarklet.js';document.head.appendChild(script);})()
-	// (function(){var script=document.createElement('script');script.onload=function(){var stats=new Stats();document.body.appendChild(stats.dom);requestAnimationFrame(function loop(){stats.update();requestAnimationFrame(loop)});};script.src='//mrdoob.github.io/stats.js/build/stats.min.js';document.head.appendChild(script);})()
+	// (function () {
+	// 	var script = document.createElement('script');
+	// 	script.src = 'https://rawgit.com/paulirish/memory-stats.js/master/bookmarklet.js';
+	// 	document.head.appendChild(script);
+	// })()
+	// var stats = new Stats();
+	// stats.showPanel(1); // 0: fps, 1: ms, 2: mb, 3+: custom
+	// document.body.appendChild(stats.dom);
+
+	// function animate() {
+
+	// 	stats.begin();
+
+	// 	// monitored code goes here
+
+	// 	stats.end();
+
+	// 	requestAnimationFrame(animate);
+
+	// }
+
+	// requestAnimationFrame(animate);
+
+	// var array = [];
+
+	// for (var i = 0; i < 500; i++) {
+
+	// 	var stats = new Stats();
+	// 	stats.dom.style.position = 'relative';
+	// 	stats.dom.style.float = 'left';
+	// 	document.body.appendChild(stats.dom);
+
+	// 	array.push(stats);
+
+	// }
+
+	// function animate() {
+
+	// 	for (var i = 0; i < array.length; i++) {
+
+	// 		var stats = array[i];
+	// 		stats.update();
+
+	// 	}
+
+	// 	requestAnimationFrame(animate);
+
+	// }
+
+	// animate();
 </script>
