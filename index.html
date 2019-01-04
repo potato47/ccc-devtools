@@ -1,6 +1,6 @@
+<link rel="stylesheet" href="app/editor/static/preview-templates/ccc-devtools/css/vue-beauty.min.css">
 <link rel="stylesheet" href="app/editor/static/preview-templates/ccc-devtools/css/element-ui.css">
 <link rel="stylesheet" href="app/editor/static/preview-templates/ccc-devtools/css/iview.css">
-<link rel="stylesheet" href="app/editor/static/preview-templates/ccc-devtools/css/vue-beauty.min.css">
 
 <style>
 	body {
@@ -16,6 +16,10 @@
 		padding-left: 5px;
 		padding-right: 5px;
 	}
+	.el-card__body {
+		padding-left: 20px;
+		padding-right: 10px;
+	}
 	.ivu-collapse-content {
 		color: #515a6e;
 		padding: 0 5px 0 16px;
@@ -24,6 +28,9 @@
 	.el-input-number--mini .el-input-number__decrease, .el-input-number--mini .el-input-number__increase {
 		width: 12px;
 		font-size: 12px;
+	}
+	.el-select.el-select--mini {
+		width: 100%;
 	}
 </style>
 <div id="app">
@@ -36,7 +43,7 @@
 				<Split v-model="splitRight" mode="vertical">
 					<div slot="top" class="demo-split-pane" style="padding-left: 5px;">
 						<!-- <el-input placeholder="搜索节点" v-model="filterText" size="mini" id="searchInput"></el-input> -->
-						<v-tree :data="sceneTreeData" ref="sceneTree" @select="handleNodesSelect" style="min-width: 250px;height: 100%;overflow-x:hidden;overflow-y:auto;background: white;"></v-tree>
+						<v-tree v-if="isDevMode" :data="sceneTreeData" ref="sceneTree" @select="handleNodesSelect" style="min-width: 250px;height: 100%;overflow-x:hidden;overflow-y:auto;background: white;"></v-tree>
 						<!-- <el-tree v-if="isDevMode" :data="sceneTreeData" :draggable="true" :props="nodeProps" :default-expanded-keys="defaultExpandedKeys"
 						 empty-text="暂无数据..." :node-key="'_id'" :expand-on-click-node="false" :filter-node-method="filterNode" ref="sceneTree"
 						 @node-click="handleNodeClick" style="min-width: 250px;height: 100%;overflow-x:hidden;overflow-y:auto;">
@@ -52,120 +59,143 @@
 								<el-col :span="2" style="text-align:center;padding-top:7px;padding-left:5px;">
 									<el-checkbox v-model="node.active"></el-checkbox>
 								</el-col>
-								<el-col :span="20">
+								<el-col :span="18">
 									<el-input v-model="node.name" size="mini"></el-input>
 								</el-col>
-								<el-col :span="2">
-									<el-button icon="el-icon-search" @click="outputNodeHandler" size="mini" circle></el-button>
+								<el-col :span="4">
+									<div style="width: 100%;height:28px;border: solid 1px rgb(220, 223, 230);border-radius: 4px;text-align: center;"
+									 @click="handleChangeNodeSchema"><span style="line-height: 28px;" :style="{color: is3DNode?'#409EFF':'#606266'}">2.5d</span></div>
 								</el-col>
+
 							</el-row>
-							<Collapse simple value="0">
-								<Panel :name="index+''" v-for="(section,index) in propSchema" :key="section.key">
-									{{ section.title }}
-									<div slot="content">
-										<el-row style="height: 28px;margin-bottom:3px;" v-for="row in section.rows" :key="row.key">
-											<el-col v-for="col in row" :key="col.key" :span="col.span" style="text-align: left;line-height: 28px;">
-												<span v-if="col.type == 'label'">{{col.value}}</span>
-												<el-input-number v-if="col.type == 'number'" v-model="node[col.field]" controls-position="right" size="mini"
-												 style="width: 100%;"></el-input-number>
-												<el-input v-if="col.type == 'input'" v-model="node[col.field]" size="mini"></el-input>
-												<el-color-picker v-if="col.type == 'color'" :ref="col.key" size="mini" v-model="node[col.field]"></el-color-picker>
-											</el-col>
-										</el-row>
-									</div>
-								</Panel>
-								<Panel name="2">
-									Components
-									<p slot="content">Coming soon...</p>
-								</Panel>
-							</Collapse>
+							<el-card v-if="nodeSchema">
+								<div>
+									<span>{{ nodeSchema.title }}</span>
+									<el-button style="float: right; padding: 3px 0" type="text" @click="outputNodeHandler">输出引用</el-button>
+								</div>
+								<hr style="margin: 10px 0;" />
+								<div>
+									<el-row style="height: 28px;margin-bottom:3px;" v-for="(row, ri) in nodeSchema.rows" :key="ri">
+										<el-col v-for="(col, ci) in row" :key="ci" :span="col.span" style="text-align: left;line-height: 28px;">
+											<span v-if="col.type == 'label'">{{col.field}}</span>
+											<el-input-number v-if="col.type == 'number'" v-model="node[col.field]" controls-position="right" size="mini"
+											 style="width: 100%;"></el-input-number>
+											<el-input-number v-if="col.type == '3DAngle'" v-model="node.eulerAngles[col.field]" controls-position="right"
+											 size="mini" style="width: 100%;"></el-input-number>
+											<el-input v-if="col.type == 'input'" v-model="node[col.field]" size="mini"></el-input>
+											<el-color-picker v-if="col.type == 'color'" :ref="col.key" size="mini" v-model="node[col.field]"></el-color-picker>
+										</el-col>
+									</el-row>
+								</div>
+							</el-card>
+							<el-card v-for="(section,index) in componentsSchema" :key="section.key" style="margin: 10px 0;">
+								<div>
+									<el-checkbox v-model="node[section.key].enabled">{{ section.title }}</el-checkbox>
+									<el-button style="float: right; padding: 3px 0" type="text" @click="outputComponentHandler(section.key)">输出引用</el-button>
+								</div>
+								<hr v-if="section.rows" style="margin: 10px 0;" />
+								<div>
+									<el-row style="height: 28px;margin-bottom:3px;" v-for="(row,ri) in section.rows" :key="ri">
+										<el-col v-for="(col,ci) in row" :key="ci" :span="col.span" style="text-align: left;line-height: 28px;">
+											<span v-if="col.type == 'label'">{{col.field}}</span>
+											<el-input-number v-if="col.type == 'number'" v-model="node[section.key][col.field]" controls-position="right"
+											 size="mini" style="width: 100%;"></el-input-number>
+											<el-input v-if="col.type == 'input'" v-model="node[section.key][col.field]" size="mini"></el-input>
+											<el-input v-if="col.type == 'textarea'" type="textarea" :rows="1" v-model="node[section.key][col.field]"
+											 size="mini">
+											</el-input>
+											<el-color-picker v-if="col.type == 'color'" :ref="col.key" size="mini" v-model="node[section.key][col.field]"></el-color-picker>
+											<el-checkbox v-if="col.type == 'bool'" v-model="node[section.key][col.field]"></el-checkbox>
+											<el-select v-if="col.type == 'select'" v-model="node[section.key][col.field]" size="mini">
+												<el-option v-for="item in col.options" :key="item.value" :label="item.label" :value="item.value">
+												</el-option>
+											</el-select>
+										</el-col>
+									</el-row>
+								</div>
+							</el-card>
 						</div>
 					</div>
 				</Split>
 			</div>
 		</Split>
-		<el-popover style="position:absolute;left:5px;top:50px;" width="150" placement="top-start" trigger="click">
-			<el-button type="info" icon="el-icon-setting" circle slot="reference" size="mini"></el-button>
-			<div>
-				<el-row style="margin:5px 0;">
-					<el-col :span="12" style="text-align:left;padding-top:7px;padding-left:5px;">
-						节点树
-					</el-col>
-					<el-col :span="12">
-						<el-switch style="margin: 5px;" v-model="isDevMode" @change="handleChangeMode" active-color="#0099ff"
-						 inactive-color="gray">
-						</el-switch>
-					</el-col>
-				</el-row>
-				<!-- <el-row style="margin:5px 0;">
-					<el-col :span="12" style="text-align:left;padding-top:7px;padding-left:5px;">
-						FPS
-					</el-col>
-					<el-col :span="12">
-						<el-switch style="margin: 5px;" v-model="isDevMode" @change="handleChangeMode" active-color="#0099ff"
-						 inactive-color="gray">
-						</el-switch>
-					</el-col>
-				</el-row>
-				<el-row style="margin:5px 0;">
-					<el-col :span="12" style="text-align:left;padding-top:7px;padding-left:5px;">
-						帧时间
-					</el-col>
-					<el-col :span="12">
-						<el-switch style="margin: 5px;" v-model="isDevMode" @change="handleChangeMode" active-color="#0099ff"
-						 inactive-color="gray">
-						</el-switch>
-					</el-col>
-				</el-row>
-				<el-row style="margin:5px 0;">
-					<el-col :span="12" style="text-align:left;padding-top:7px;padding-left:5px;">
-						内存
-					</el-col>
-					<el-col :span="12">
-						<el-switch style="margin: 5px;" v-model="isDevMode" @change="handleChangeMode" active-color="#0099ff"
-						 inactive-color="gray">
-						</el-switch>
-					</el-col>
-				</el-row> -->
-				<el-row style="margin:5px 0;">
-					<el-col :span="12" style="text-align:left;padding-top:7px;padding-left:5px;">
-						源码
-					</el-col>
-					<el-col :span="12">
-						<Icon style="margin: 5px;" type="logo-github" size="24" @click="openGithub" />
-					</el-col>
-				</el-row>
-			</div>
-		</el-popover>
+		<div id="panelCtl" style="position:absolute;left:5px;top:50px;height: 50px;display: flex;align-items: center;">
+			<el-popover width="150" placement="top-start" trigger="click">
+				<el-button type="info" icon="el-icon-setting" circle slot="reference" size="mini"></el-button>
+				<div>
+					<el-row style="margin:5px 0;">
+						<el-col :span="12" style="text-align:left;padding-top:7px;padding-left:5px;">
+							节点树
+						</el-col>
+						<el-col :span="12">
+							<el-switch style="margin: 5px;" v-model="isDevMode" @change="handleChangeMode" active-color="#0099ff"
+							 inactive-color="gray">
+							</el-switch>
+						</el-col>
+					</el-row>
+					<el-row style="margin:5px 0;">
+						<el-col :span="12" style="text-align:left;padding-top:7px;padding-left:5px;">
+							FPS
+						</el-col>
+						<el-col :span="12">
+							<el-switch style="margin: 5px;" v-model="isShowFPS" @change="handleChangeStats" active-color="#0099ff"
+							 inactive-color="gray">
+							</el-switch>
+						</el-col>
+					</el-row>
+					<el-row style="margin:5px 0;">
+						<el-col :span="12" style="text-align:left;padding-top:7px;padding-left:5px;">
+							帧时间
+						</el-col>
+						<el-col :span="12">
+							<el-switch style="margin: 5px;" v-model="isShowMS" @change="handleChangeStats" active-color="#0099ff"
+							 inactive-color="gray">
+							</el-switch>
+						</el-col>
+					</el-row>
+					<el-row style="margin:5px 0;">
+						<el-col :span="12" style="text-align:left;padding-top:7px;padding-left:5px;">
+							内存
+						</el-col>
+						<el-col :span="12">
+							<el-switch style="margin: 5px;" v-model="isShowMB" @change="handleChangeStats" active-color="#0099ff"
+							 inactive-color="gray">
+							</el-switch>
+						</el-col>
+					</el-row>
+					<el-row style="margin:5px 0;">
+						<el-col :span="12" style="text-align:left;padding-top:7px;padding-left:5px;">
+							源码
+						</el-col>
+						<el-col :span="12">
+							<el-badge value="new" :hidden="!needUpdate">
+								<Icon style="margin: 5px;" type="logo-github" size="24" @click="openGithub" />
+							</el-badge>
+						</el-col>
+					</el-row>
+				</div>
+			</el-popover>
+		</div>
 	</div>
 </div>
 
 <script type="text/javascript" charset="utf-8" src="app/editor/static/preview-templates/ccc-devtools/js/vue.min.js"></script>
+<script type="text/javascript" charset="utf-8" src="app/editor/static/preview-templates/ccc-devtools/js/vue-beauty.min.js"></script>
 <script src="app/editor/static/preview-templates/ccc-devtools/js/element-ui.js"></script>
 <script type="text/javascript" charset="utf-8" src="app/editor/static/preview-templates/ccc-devtools/js/iview.js"></script>
-<script type="text/javascript" charset="utf-8" src="app/editor/static/preview-templates/ccc-devtools/js/vue-beauty.min.js"></script>
 <script type="text/javascript" charset="utf-8" src="app/editor/static/preview-templates/ccc-devtools/js/stats.min.js"></script>
 
 <script type="text/javascript" src="app/editor/static/preview-templates/ccc-devtools/config.js"></script>
 <script>
-	var nex = {
-		checkVersion: function () {
-			var url = 'https://raw.githubusercontent.com/potato47/ccc-devtools/master/config.js';
-			var xhr = new XMLHttpRequest();
-			xhr.onreadystatechange = function () {
-				if (xhr.readyState == 4 && (xhr.status >= 200 && xhr.status < 400)) {
-					var response = xhr.responseText;
-					console.log(response);
-				}
-			};
-			xhr.open("GET", url, true);
-			xhr.send();
-		}
-	}
-	var app = new Vue({
+	let app = new Vue({
 		el: '#app',
 		data: {
+			needUpdate: false,
+			is3DNode: false,
 			isDevMode: false,
+			isShowFPS: false,
+			isShowMS: false,
+			isShowMB: false,
 			filterText: '',
 			splitLeft: 0.7,
 			splitRight: 0.5,
@@ -177,10 +207,57 @@
 				isLeaf: 'leaf'
 			},
 			node: null,
-			propSchema: [],
+			nodeSchema: {},
+			componentsSchema: [],
 			intervalId: -1,
 		},
 		methods: {
+			api: function (url, cb) {
+				let xhr = new XMLHttpRequest();
+				xhr.onreadystatechange = function () {
+					if (xhr.readyState == 4 && (xhr.status >= 200 && xhr.status < 400)) {
+						let response = xhr.responseText;
+						cb(JSON.parse(xhr.responseText));
+					}
+				};
+				xhr.open("GET", url, true);
+				xhr.send();
+			},
+			compareVersion: function (localVersion, remoteVersion) {
+				let vL = localVersion.split('.');
+				let vR = remoteVersion.split('.');
+				for (let i = 0; i < vL.length; ++i) {
+					let a = parseInt(vL[i], 10);
+					let b = parseInt(vR[i] || '0', 10);
+					if (a === b) {
+						continue;
+					} else if (a > b) {
+						return false;
+					} else if (a < b) {
+						return true;
+					}
+				}
+				if (vR.length > vL.length) {
+					return true;
+				} else {
+					return false;
+				}
+			},
+			checkVersion: function () {
+				this.api('https://raw.githubusercontent.com/potato47/ccc-devtools/master/version.json', (data) => {
+					let remoteVersion = data.version;
+					this.api('app/editor/static/preview-templates/ccc-devtools/version.json', (data) => {
+						let localVersion = data.version;
+						versionStatus = this.compareVersion(localVersion, remoteVersion);
+						this.$data.needUpdate = versionStatus;
+						console.groupCollapsed('ccc-devtoos')
+						console.log('本地版本：' + localVersion);
+						console.log('远程版本：' + remoteVersion);
+						console.log('更新地址：' + 'https://github.com/potato47/ccc-devtools.git');
+						console.groupEnd('ccc-devtoos');
+					});
+				});
+			},
 			handleRefreshTree() {
 				this.$data.sceneTreeData = [];
 				setTimeout(() => {
@@ -200,10 +277,9 @@
 			},
 			handleNodeClick(node) {
 				if (node) {
-					this.$data.propSchema = [];
 					this.$data.node = node;
 					cc.js.getset(node, 'hex_color', () => {
-						return '#' + node.color.toHEX();
+						return '#' + node.color.toHEX('#rrggbb');
 					}, (hex) => {
 						node.color = new cc.Color().fromHEX(hex);
 					}, false, true);
@@ -214,7 +290,33 @@
 							this.$data.node = null;
 						}
 					}
-					this.$data.propSchema = [NEX_CONFIG.propSchema.node2d];
+					this.$data.nodeSchema = this.$data.is3DNode ? NEX_CONFIG.nodeSchema.node3d : NEX_CONFIG.nodeSchema.node2d;
+					let componentsSchema = [];
+					for (let component of node._components) {
+						let schema = NEX_CONFIG.componentsSchema[component.__classname__];
+						if (schema) {
+							node[schema.key] = node.getComponent(schema.key);
+							for (let i = 0; i < schema.rows.length; i++) {
+								for (let j = 0; j < schema.rows[i].length; j++) {
+									if (schema.rows[i][j].type === 'color') {
+										cc.js.getset(node[schema.key], schema.rows[i][j].field, () => {
+											return '#' + node.getComponent(schema.key)[schema.rows[i][j].rawField].toHEX('#rrggbb');
+										}, (hex) => {
+											node.getComponent(schema.key)[schema.rows[i][j].rawField] = new cc.Color().fromHEX(hex);
+										}, false, true);
+									}
+								}
+							}
+						} else {
+							schema = {
+								title: component.__classname__,
+								key: component.__classname__
+							};
+							node[schema.key] = node.getComponent(schema.key);
+						}
+						componentsSchema.push(schema);
+					}
+					this.$data.componentsSchema = componentsSchema;
 				} else {
 					this.$data.node = null;
 				}
@@ -228,8 +330,14 @@
 				console.log('temp' + i);
 				console.log(window['temp' + i]);
 			},
-			outputComponentHandler(target) {
-				// TODO
+			outputComponentHandler(data) {
+				let i = 1;
+				while (window['temp' + i] !== undefined) {
+					i++;
+				}
+				window['temp' + i] = this.$data.node.getComponent(data);
+				console.log('temp' + i);
+				console.log(window['temp' + i]);
 			},
 			openGithub() {
 				window.open('https://github.com/potato47/ccc-devtools');
@@ -261,7 +369,6 @@
 							this.$data.sceneTreeData = [];
 						}, this);
 						clearInterval(this.$data.intervalId);
-						console.log('ccc-devtools init');
 					} else {
 						// console.log('cc is not init');
 					}
@@ -279,9 +386,52 @@
 				document.body.appendChild(document.getElementById('content'));
 				localStorage.setItem('isDevMode', 0);
 			},
+			handleChangeNodeSchema() {
+				if (this.is3DNode) {
+					this.is3DNode = false;
+				} else {
+					this.is3DNode = true;
+				}
+				this.$data.nodeSchema = this.$data.is3DNode ? NEX_CONFIG.nodeSchema.node3d : NEX_CONFIG.nodeSchema.node2d;
+			},
 			handleChangeMode(data) {
 				data ? this.openDevMode() : this.closeDevMode();
 			},
+			handleChangeStats() {
+				let panels = document.getElementsByClassName('statsPanel');
+				while (panels.length > 0) {
+					panels[0].parentElement.removeChild(panels[0]);
+				}
+				let newPanels = [];
+				let array = [];
+				this.$data.isShowFPS ? (array.push(0) && localStorage.setItem('isShowFPS', '1')) : localStorage.setItem(
+					'isShowFPS', '0');
+				this.$data.isShowMS ? (array.push(1) && localStorage.setItem('isShowMS', '1')) : localStorage.setItem('isShowMS',
+					'0');
+				this.$data.isShowMB ? (array.push(2) && localStorage.setItem('isShowMB', '1')) : localStorage.setItem('isShowMB',
+					'0');
+				for (let i of array) {
+					let stats = new Stats();
+					stats.showPanel(i); // 0: fps, 1: ms, 2: mb, 3+: custom
+					stats.dom.style.position = 'relative';
+					stats.dom.style.float = 'right';
+					stats.dom.style.marginLeft = '10px';
+					stats.dom.style.marginBottom = '10px';
+					stats.dom.style.pointerEvents = 'none';
+					stats.dom.className = 'statsPanel';
+					document.getElementById('panelCtl').appendChild(stats.dom);
+					newPanels.push(stats);
+				}
+
+				function animate() {
+					for (let i = 0; i < newPanels.length; i++) {
+						let stats = newPanels[i];
+						stats.update();
+					}
+					requestAnimationFrame(animate);
+				}
+				animate();
+			}
 		},
 		watch: {
 			filterText(val) {
@@ -289,66 +439,20 @@
 			}
 		},
 		created: function () {
+			this.checkVersion();
 			document.body.insertBefore(document.getElementById('app'), document.body.firstChild);
-			if (localStorage.getItem('isDevMode') === "1") {
+			if (localStorage.getItem('isDevMode') === '1') {
 				this.$data.isDevMode = true;
 				this.openDevMode();
 			} else {
 				this.$data.isDevMode = false;
 			}
+			this.$data.isShowFPS = localStorage.getItem('isShowFPS') === '1';
+			this.$data.isShowMS = localStorage.getItem('isShowMS') === '1';
+			this.$data.isShowMB = localStorage.getItem('isShowMB') === '1';
+			setTimeout(() => {
+				this.handleChangeStats();
+			}, 0);
 		}
 	});
-</script>
-
-<script>
-	// (function () {
-	// 	var script = document.createElement('script');
-	// 	script.src = 'https://rawgit.com/paulirish/memory-stats.js/master/bookmarklet.js';
-	// 	document.head.appendChild(script);
-	// })()
-	// var stats = new Stats();
-	// stats.showPanel(1); // 0: fps, 1: ms, 2: mb, 3+: custom
-	// document.body.appendChild(stats.dom);
-
-	// function animate() {
-
-	// 	stats.begin();
-
-	// 	// monitored code goes here
-
-	// 	stats.end();
-
-	// 	requestAnimationFrame(animate);
-
-	// }
-
-	// requestAnimationFrame(animate);
-
-	// var array = [];
-
-	// for (var i = 0; i < 500; i++) {
-
-	// 	var stats = new Stats();
-	// 	stats.dom.style.position = 'relative';
-	// 	stats.dom.style.float = 'left';
-	// 	document.body.appendChild(stats.dom);
-
-	// 	array.push(stats);
-
-	// }
-
-	// function animate() {
-
-	// 	for (var i = 0; i < array.length; i++) {
-
-	// 		var stats = array[i];
-	// 		stats.update();
-
-	// 	}
-
-	// 	requestAnimationFrame(animate);
-
-	// }
-
-	// animate();
 </script>
