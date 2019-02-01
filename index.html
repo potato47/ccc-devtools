@@ -42,16 +42,23 @@
 			<div slot="right" class="demo-split-pane no-padding">
 				<Split v-model="splitRight" mode="vertical">
 					<div slot="top" class="demo-split-pane" style="padding-left: 5px;">
-						<!-- <el-input placeholder="搜索节点" v-model="filterText" size="mini" id="searchInput"></el-input> -->
-						<v-tree v-if="isDevMode" :data="sceneTreeData" ref="sceneTree" @select="handleNodesSelect" style="min-width: 250px;height: 100%;overflow-x:hidden;overflow-y:auto;background: white;"></v-tree>
-						<!-- <el-tree v-if="isDevMode" :data="sceneTreeData" :draggable="true" :props="nodeProps" :default-expanded-keys="defaultExpandedKeys"
-						 empty-text="暂无数据..." :node-key="'_id'" :expand-on-click-node="false" :filter-node-method="filterNode" ref="sceneTree"
-						 @node-click="handleNodeClick" style="min-width: 250px;height: 100%;overflow-x:hidden;overflow-y:auto;">
+						<el-input v-if="!isAutoRefreshTree" placeholder="搜索节点" v-model="filterText" size="mini" id="searchInput"></el-input>
+						<v-tree v-if="isDevMode&&isAutoRefreshTree" :data="sceneTreeData" ref="sceneTree" @select="handleNodesSelect"
+						 style="min-width: 250px;height: 100%;overflow-x:hidden;overflow-y:auto;background: white;"></v-tree>
+						<el-tree v-if="isDevMode&&!isAutoRefreshTree" :data="sceneTreeData" :draggable="true" :props="nodeProps"
+						 :default-expanded-keys="defaultExpandedKeys" empty-text="暂无数据..." :node-key="'_id'" :expand-on-click-node="false"
+						 :filter-node-method="filterNode" ref="sceneTree" @node-click="handleNodeClick" style="min-width: 250px;height: 100%;overflow-x:hidden;overflow-y:auto;">
 							<span class="custom-tree-node" slot-scope="{ node, data }">
 								<span v-bind:style="{color: data.activeInHierarchy?'#606266':'#C0C4CC'}">{{ node.label }}</span>
 							</span>
-						</el-tree> -->
-						<!-- <el-button @click="handleRefreshTree" icon="el-icon-refresh" size="mini" style="position: absolute;right:0;top:0;"></el-button> -->
+						</el-tree>
+						<el-button v-if="!isAutoRefreshTree" @click="handleRefreshTree" icon="el-icon-refresh" size="mini" style="position: absolute;right:0;top:0;"></el-button>
+						<div style="position: absolute;right:0;bottom:0;width: 100px;height:20px;">
+							<span style="line-height:20px;">自动刷新</span>
+							<el-switch v-model="isAutoRefreshTree" active-color="#0099ff" inactive-color="gray"></el-switch>
+						</div>
+
+						<!-- <el-button @click="handleSwitchTreeMode" icon="el-icon-refresh" size="mini" style="position: absolute;right:0;bottom:0;"></el-button> -->
 					</div>
 					<div slot="bottom" class="demo-split-pane" style="background: white;min-width: 250px;height: 100%;padding:5px 0;overflow-x:hidden;overflow-y:auto;">
 						<div v-if="node">
@@ -71,7 +78,8 @@
 							<el-card v-if="nodeSchema">
 								<div>
 									<span>{{ nodeSchema.title }}</span>
-									<el-button style="float: right; padding: 3px 0" type="text" @click="outputNodeHandler">输出引用</el-button>
+									<el-button style="float: right; padding: 3px 0;" type="text" @click="outputNodeHandler">输出引用</el-button>
+									<el-button style="float: right; padding: 3px 0;margin-right: 10px;" type="text" @click="drawNodeRect">标记位置</el-button>
 								</div>
 								<hr style="margin: 10px 0;" />
 								<div>
@@ -196,6 +204,7 @@
 			isShowFPS: false,
 			isShowMS: false,
 			isShowMB: false,
+			isAutoRefreshTree: true,
 			filterText: '',
 			splitLeft: 0.7,
 			splitRight: 0.5,
@@ -263,6 +272,9 @@
 				setTimeout(() => {
 					this.updateTreeData();
 				}, 0);
+			},
+			handleSwitchTreeMode() {
+
 			},
 			updateTreeData() {
 				this.$data.sceneTreeData = cc.director.getScene().children;
@@ -339,6 +351,9 @@
 				console.log('temp' + i);
 				console.log(window['temp' + i]);
 			},
+			drawNodeRect(node) {
+				cc.where(this.$data.node);
+			},
 			openGithub() {
 				window.open('https://github.com/potato47/ccc-devtools');
 			},
@@ -367,7 +382,9 @@
 						cc.director.on(cc.Director.EVENT_BEFORE_SCENE_LOADING, () => {
 							this.$data.node = null;
 							this.$data.sceneTreeData = [];
+							this.$data.treeParam = [];
 						}, this);
+						this.initConsoleUtil();
 						clearInterval(this.$data.intervalId);
 					} else {
 						// console.log('cc is not init');
@@ -431,11 +448,130 @@
 					requestAnimationFrame(animate);
 				}
 				animate();
+			},
+			initConsoleUtil() {
+				if (cc.tree) return;
+				cc.tree = function (key) {
+					let index = key || 0;
+					let treeNode = function (node) {
+						let nameStyle =
+							`color: ${node.parent === null || node.activeInHierarchy ? 'green' : 'grey'}; font-size: 14px;font-weight:bold`;
+						let propStyle =
+							`color: black; background: lightgrey;margin-left: 5px;border-radius:3px;padding: 0 3px;font-size: 10px;font-weight:bold`;
+						let indexStyle =
+							`color: orange; background: black;margin-left: 5px;border-radius:3px;padding:0 3px;fonrt-size: 10px;font-weight:bold;`
+						let nameValue = `%c${node.name}`;
+						let propValue =
+							`%c${node.x.toFixed(0) + ',' + node.y.toFixed(0) + ',' + node.width.toFixed(0) + ',' + node.height.toFixed(0) + ',' + node.scale.toFixed(1)}`
+						let indexValue = `%c${index++}`;
+						if (node.childrenCount > 0) {
+							console.groupCollapsed(nameValue + propValue + indexValue, nameStyle, propStyle, indexStyle);
+							for (let i = 0; i < node.childrenCount; i++) {
+								treeNode(node.children[i]);
+							}
+							console.groupEnd();
+						} else {
+							console.log(nameValue + propValue + indexValue, nameStyle, propStyle, indexStyle);
+						}
+					}
+					if (key) {
+						let node = cc.cat(key);
+						index = node['tempIndex'];
+						treeNode(node);
+					} else {
+						let scene = cc.director.getScene();
+						treeNode(scene);
+					}
+					return '属性依次为x,y,width,height,scale.使用cc.cat(id)查看详细属性.';
+				}
+				cc.cat = function (key) {
+					let index = 0;
+					let target;
+					let sortId = function (node) {
+						if (target) return;
+						if (cc.js.isNumber(key)) {
+							if (key === index++) {
+								target = node;
+								return;
+							}
+						} else {
+							if (key.toLowerCase() === node.name.toLowerCase()) {
+								target = node;
+								return;
+							} else {
+								index++;
+							}
+						}
+						if (node.childrenCount > 0) {
+							for (let i = 0; i < node.childrenCount; i++) {
+								sortId(node.children[i]);
+							}
+						}
+					}
+					let scene = cc.director.getScene();
+					sortId(scene);
+					target['tempIndex'] = cc.js.isNumber(key) ? key : index;
+					return target;
+				}
+				cc.list = function (key) {
+					let targets = [];
+					let step = function (node) {
+						if (node.name.toLowerCase().indexOf(key.toLowerCase()) > -1) {
+							targets.push(node);
+						}
+						if (node.childrenCount > 0) {
+							for (let i = 0; i < node.childrenCount; i++) {
+								step(node.children[i]);
+							}
+						}
+					}
+					let scene = cc.director.getScene();
+					step(scene);
+					if (targets.length === 1) {
+						return targets[0];
+					} else {
+						return targets;
+					}
+				}
+				cc.where = function (key) {
+					let target = key.name ? key : cc.cat(key);
+					if (!target) {
+						return null;
+					}
+					let rect = target.getBoundingBoxToWorld();
+					let borderNode = new cc.Node();
+					let bgNode = new cc.Node();
+					let graphics = bgNode.addComponent(cc.Graphics);
+					let canvas = cc.find('Canvas');
+					canvas.addChild(bgNode);
+					bgNode.addChild(borderNode);
+					bgNode.position = canvas.convertToNodeSpaceAR(rect.center);
+					let isZeroSize = rect.width === 0 || rect.height === 0;
+					if (isZeroSize) {
+						graphics.circle(0, 0, 100);
+						graphics.fillColor = cc.Color.GREEN;
+						graphics.fill();
+					} else {
+						bgNode.width = rect.width;
+						bgNode.height = rect.height;
+						graphics.rect(-bgNode.width / 2, -bgNode.height / 2, bgNode.width, bgNode.height);
+						graphics.strokeColor = cc.Color.RED;
+						graphics.lineWidth = 10;
+						graphics.stroke()
+					}
+					setTimeout(() => {
+						if (cc.isValid(bgNode)) {
+							bgNode.destroy();
+						}
+					}, 2000);
+					return target;
+				}
 			}
 		},
 		watch: {
 			filterText(val) {
 				this.$refs.sceneTree.filter(val);
+				// console.log(val);
 			}
 		},
 		created: function () {
@@ -453,6 +589,6 @@
 			setTimeout(() => {
 				this.handleChangeStats();
 			}, 0);
-		}
+		},
 	});
 </script>
