@@ -362,37 +362,29 @@
 				return node.name.toLowerCase().indexOf(value.toLowerCase()) !== -1;
 			},
 			openDevMode() {
-				let initWin = () => {
-					if (window.cc) {
-						cc.js.getset(cc.Node.prototype, 'isLeaf', function () {
-							return this.childrenCount === 0;
-						}, function (value) {
+				setTimeout(() => {
+					cc.js.getset(cc.Node.prototype, 'isLeaf', function () {
+						return this.childrenCount === 0;
+					}, function (value) {
 
-						}, false, true);
-						let top = document.getElementById('top')
-						top.appendChild(document.getElementsByClassName('toolbar')[0]);
-						document.getElementById('game_panel').appendChild(document.getElementById('content'));
-						let scene = cc.director.getScene();
-						if (scene) {
-							this.updateTreeData();
-						}
-						cc.director.on(cc.Director.EVENT_AFTER_SCENE_LAUNCH, () => {
-							this.updateTreeData();
-						}, this);
-						cc.director.on(cc.Director.EVENT_BEFORE_SCENE_LOADING, () => {
-							this.$data.node = null;
-							this.$data.sceneTreeData = [];
-							this.$data.treeParam = [];
-						}, this);
-						this.initConsoleUtil();
-						clearInterval(this.$data.intervalId);
-					} else {
-						// console.log('cc is not init');
+					}, false, true);
+					let top = document.getElementById('top')
+					top.appendChild(document.getElementsByClassName('toolbar')[0]);
+					document.getElementById('game_panel').appendChild(document.getElementById('content'));
+					let scene = cc.director.getScene();
+					if (scene) {
+						this.updateTreeData();
 					}
-				}
-				this.$data.intervalId = setInterval(initWin, 500);
-				setTimeout(initWin, 0);
-				localStorage.setItem('isDevMode', 1);
+					cc.director.on(cc.Director.EVENT_AFTER_SCENE_LAUNCH, () => {
+						this.updateTreeData();
+					}, this);
+					cc.director.on(cc.Director.EVENT_BEFORE_SCENE_LOADING, () => {
+						this.$data.node = null;
+						this.$data.sceneTreeData = [];
+						this.$data.treeParam = [];
+					}, this);
+					localStorage.setItem('isDevMode', 1);
+				}, 0);
 			},
 			closeDevMode() {
 				this.$data.node = null;
@@ -448,6 +440,17 @@
 					requestAnimationFrame(animate);
 				}
 				animate();
+			},
+			fitFullScreen() {
+				document.getElementsByClassName('toolbar')[0].style.display = 'none';
+				let gameDiv = document.getElementById('GameDiv');
+				let gameContainer = document.getElementById('Cocos2dGameContainer');
+				let gameCanvas = document.getElementById('GameCanvas');
+				gameDiv.style.width = '100%';
+				gameDiv.style.height = '100%';
+				gameCanvas.style.width = '100%';
+				gameCanvas.style.height = '100%';
+				// document.body.style.cssText+="-webkit-transform: rotate(-90deg);-moz-transform: rotate(-90deg)";
 			},
 			initConsoleUtil() {
 				if (cc.tree) return;
@@ -577,18 +580,35 @@
 		created: function () {
 			this.checkVersion();
 			document.body.insertBefore(document.getElementById('app'), document.body.firstChild);
-			if (localStorage.getItem('isDevMode') === '1') {
-				this.$data.isDevMode = true;
-				this.openDevMode();
-			} else {
-				this.$data.isDevMode = false;
+
+			let onCCInit = () => {
+				this.initConsoleUtil();
+				if (cc.sys.isMobile) {
+					this.fitFullScreen();
+				}
+				if (localStorage.getItem('isDevMode') === '1') {
+					this.$data.isDevMode = true;
+					this.openDevMode();
+				} else {
+					this.$data.isDevMode = false;
+				}
+				this.$data.isShowFPS = localStorage.getItem('isShowFPS') === '1';
+				this.$data.isShowMS = localStorage.getItem('isShowMS') === '1';
+				this.$data.isShowMB = localStorage.getItem('isShowMB') === '1';
+				setTimeout(() => {
+					this.handleChangeStats();
+				}, 0);
 			}
-			this.$data.isShowFPS = localStorage.getItem('isShowFPS') === '1';
-			this.$data.isShowMS = localStorage.getItem('isShowMS') === '1';
-			this.$data.isShowMB = localStorage.getItem('isShowMB') === '1';
-			setTimeout(() => {
-				this.handleChangeStats();
-			}, 0);
+			let checkCC = () => {
+				if (window.cc) {
+					onCCInit();
+					clearInterval(this.$data.intervalId);
+				} else {
+					// console.log('cc is not init');
+				}
+			}
+			this.$data.intervalId = setInterval(checkCC, 500);
+			setTimeout(checkCC, 0);
 		},
 	});
 </script>
