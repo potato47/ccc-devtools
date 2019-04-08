@@ -1,0 +1,56 @@
+.ivu-split-trigger {
+	background: #444 !important;
+}
+
+.right-pane *,
+.ivu-split-trigger {
+	border-color: #333 !important;
+}
+.right-pane input,
+.right-pane textarea,
+.right-pane .el-checkbox__inner:not(.is-checked) {
+	background-color: #333 !important;
+	color: #bbb !important;
+}
+
+.right-pane button,
+.right-pane span[role='button'],
+.right-pane .ant-tree,
+.right-pane .demo-split-pane,
+.right-pane .el-card,
+.right-pane .el-tree {
+	background-color: #222 !important;
+}
+
+.right-pane .el-button {
+	padding-left: 10px !important;
+	padding-right: 10px !important;
+}
+
+.right-pane .top-pane span,
+.right-pane .ant-tree,
+.right-pane .demo-split-pane,
+.right-pane .el-card,
+.right-pane .el-tree {
+	color: #aaa !important;
+}
+
+.right-pane .ant-tree-node-selected {
+	background-color: #456 !important;
+}
+
+.right-pane .ant-tree-node-content-wrapper:hover,
+.right-pane .el-tree-node .el-tree-node__content:hover {
+	background-color: #567 !important;
+}
+
+.right-pane .el-switch.is-checked .el-switch__core,
+.right-pane .el-tree-node.is-current .el-tree-node__content,
+.right-pane .el-checkbox__input.is-checked .el-checkbox__inner {
+	background-color: #367 !important;
+}
+
+.right-pane .el-checkbox__label,
+.right-pane .el-button {
+	color: #59a !important;
+}
