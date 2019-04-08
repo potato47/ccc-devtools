@@ -22,6 +22,9 @@ v2.1.0: 区分手动刷新和自动刷新两种模式，手动刷新时支持搜
 
 ![preview3](./screenshots/preview3.png)
 
+v2.1.2: 新增黑色主题
+![dark-theme](./screenshots/dark-theme.png)
+
 ## 使用
 
 1. 点击 Creator 右上角进入编辑器 resources 目录，再依次进入`static/preview-templates`目录
