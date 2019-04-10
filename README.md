@@ -1,4 +1,4 @@
-# ccc-devtools v2.1.1
+# ccc-devtools v2.2.0
 Cocos Creator 网页调试器，运行时查看、修改节点树，实时更新节点属性。
 
 ## 预览
@@ -22,7 +22,7 @@ v2.1.0: 区分手动刷新和自动刷新两种模式，手动刷新时支持搜
 
 ![preview3](./screenshots/preview3.png)
 
-v2.1.2: 新增黑色主题
+v2.2.0: 新增黑色主题(感谢[@wheatup](https://github.com/wheatup) )
 ![dark-theme](./screenshots/dark-theme.png)
 
 ## 使用
@@ -50,6 +50,14 @@ v2.1.2: 新增黑色主题
 https://github.com/potato47/ccc-devtools
 
 如果没有更改源码，可直接在目录下 git pull
+
+论坛讨论地址：https://forum.cocos.com/t/creator-20190201/71578
+
+## 贡献指南
+
+- 版本号命名规则 https://semver.org/lang/zh-CN/ ,简单来讲，新功能第二位加一，修复bug第三位加一
+- 如果新增功能请在README中添加预览截图说明
+- 记得更新version.json中的版本号
 
 ## 本项目依赖以下开源项目
 

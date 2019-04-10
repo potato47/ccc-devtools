@@ -1,0 +1,36 @@
+body {
+    background-color: #333;
+}
+
+.el-color-picker, .el-color-picker__trigger {
+    width: 100% !important;
+}
+
+.el-input-number .el-input__inner {
+    text-align: left;
+}
+
+.el-input-number.is-controls-right .el-input__inner {
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+.el-card__body {
+    padding-left: 20px;
+    padding-right: 10px;
+}
+
+.ivu-collapse-content {
+    color: #515a6e;
+    padding: 0 5px 0 16px;
+    background-color: #fff;
+}
+
+.el-input-number--mini .el-input-number__decrease, .el-input-number--mini .el-input-number__increase {
+    width: 12px;
+    font-size: 12px;
+}
+
+.el-select.el-select--mini {
+    width: 100%;
+}

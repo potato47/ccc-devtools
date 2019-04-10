@@ -1,67 +1,50 @@
-<link rel="stylesheet" href="app/editor/static/preview-templates/ccc-devtools/css/vue-beauty.min.css">
-<link rel="stylesheet" href="app/editor/static/preview-templates/ccc-devtools/css/element-ui.css">
-<link rel="stylesheet" href="app/editor/static/preview-templates/ccc-devtools/css/iview.css">
-<link rel="stylesheet" href="app/editor/static/preview-templates/ccc-devtools/css/themes/dark.css">
+<link rel="stylesheet" href="app/editor/static/preview-templates/ccc-devtools/libs/vue-beauty/css/vue-beauty.min.css">
+<link rel="stylesheet" href="app/editor/static/preview-templates/ccc-devtools/libs/element/css/element-ui.css">
+<link rel="stylesheet" href="app/editor/static/preview-templates/ccc-devtools/libs/iview/css/iview.css">
+<link rel="stylesheet" href="app/editor/static/preview-templates/ccc-devtools/css/style.css">
 
-<style>
-	body {
-        background-color: #333;
-    }
-	.el-color-picker, .el-color-picker__trigger {
-		width: 100% !important;
-	}
-	.el-input-number .el-input__inner {
-		text-align: left;
-	}
-	.el-input-number.is-controls-right .el-input__inner {
-		padding-left: 5px;
-		padding-right: 5px;
-	}
-	.el-card__body {
-		padding-left: 20px;
-		padding-right: 10px;
-	}
-	.ivu-collapse-content {
-		color: #515a6e;
-		padding: 0 5px 0 16px;
-		background-color: #fff;
-	}
-	.el-input-number--mini .el-input-number__decrease, .el-input-number--mini .el-input-number__increase {
-		width: 12px;
-		font-size: 12px;
-	}
-	.el-select.el-select--mini {
-		width: 100%;
-	}
-</style>
 <div id="app">
 	<div class="demo-split">
 		<Split v-model="splitLeft" v-if="isDevMode">
-			<div slot="left" class="demo-split-pane" id="game_panel" style="display:flex;justify-content:left;align-items:center;height: 100vh;">
+			<!-- 左边游戏预览区域 -->
+			<div slot="left" class="demo-split-pane" id="game_panel"
+				style="display:flex;justify-content:left;align-items:center;height: 100vh;">
 				<div id="top" style="position: absolute;top:0;"></div>
 			</div>
+			<!-- 右边节点树和属性区域 -->
 			<div slot="right" class="demo-split-pane no-padding">
 				<Split v-model="splitRight" mode="vertical">
+					<!-- 节点树面板 -->
 					<div slot="top" class="demo-split-pane" style="padding-left: 5px;">
-						<el-input v-if="!isAutoRefreshTree" placeholder="搜索节点" v-model="filterText" size="mini" id="searchInput"></el-input>
-						<v-tree v-if="isDevMode&&isAutoRefreshTree" :data="sceneTreeData" ref="sceneTree" @select="handleNodesSelect"
-						 style="min-width: 250px;height: 100%;overflow-x:hidden;overflow-y:auto;background: white;"></v-tree>
-						<el-tree v-if="isDevMode&&!isAutoRefreshTree" :data="sceneTreeData" :draggable="true" :props="nodeProps"
-						 :default-expanded-keys="defaultExpandedKeys" empty-text="暂无数据..." :node-key="'_id'" :expand-on-click-node="false"
-						 :filter-node-method="filterNode" ref="sceneTree" @node-click="handleNodeClick" style="min-width: 250px;height: 100%;overflow-x:hidden;overflow-y:auto;">
+						<el-input v-if="!isAutoRefreshTree" placeholder="搜索节点" v-model="filterText" size="mini"
+							id="searchInput"></el-input>
+						<v-tree v-if="isDevMode&&isAutoRefreshTree" :data="sceneTreeData" ref="sceneTree"
+							@select="handleNodesSelect"
+							style="min-width: 250px;height: 100%;overflow-x:hidden;overflow-y:auto;background: white;">
+						</v-tree>
+						<el-tree v-if="isDevMode&&!isAutoRefreshTree" :data="sceneTreeData" :draggable="true"
+							:props="nodeProps" :default-expanded-keys="defaultExpandedKeys" empty-text="暂无数据..."
+							:node-key="'_id'" :expand-on-click-node="false" :filter-node-method="filterNode"
+							ref="sceneTree" @node-click="handleNodeClick"
+							style="min-width: 250px;height: 100%;overflow-x:hidden;overflow-y:auto;">
 							<span class="custom-tree-node" slot-scope="{ node, data }">
-								<span v-bind:style="{color: data.activeInHierarchy?'#606266':'#C0C4CC'}">{{ node.label }}</span>
+								<span
+									v-bind:style="{color: data.activeInHierarchy?'#606266':'#C0C4CC'}">{{ node.label }}</span>
 							</span>
 						</el-tree>
-						<el-button v-if="!isAutoRefreshTree" @click="handleRefreshTree" icon="el-icon-refresh" size="mini" style="position: absolute;right:0;top:0;"></el-button>
+						<el-button v-if="!isAutoRefreshTree" @click="handleRefreshTree" icon="el-icon-refresh"
+							size="mini" style="position: absolute;right:0;top:0;"></el-button>
 						<div style="position: absolute;right:0;bottom:0;width: 100px;height:20px;">
 							<span style="line-height:20px;">自动刷新</span>
-							<el-switch v-model="isAutoRefreshTree" active-color="#0099ff" inactive-color="gray"></el-switch>
+							<el-switch v-model="isAutoRefreshTree" active-color="#0099ff" inactive-color="gray">
+							</el-switch>
 						</div>
 
 						<!-- <el-button @click="handleSwitchTreeMode" icon="el-icon-refresh" size="mini" style="position: absolute;right:0;bottom:0;"></el-button> -->
 					</div>
-					<div slot="bottom" class="demo-split-pane" style="background: white;min-width: 250px;height: 100%;padding:5px 0;overflow-x:hidden;overflow-y:auto;">
+					<!-- 节点属性面板 -->
+					<div slot="bottom" class="demo-split-pane"
+						style="background: white;min-width: 250px;height: 100%;padding:5px 0;overflow-x:hidden;overflow-y:auto;">
 						<div v-if="node">
 							<el-row style="margin:5px 0;">
 								<el-col :span="2" style="text-align:center;padding-top:7px;padding-left:5px;">
@@ -72,51 +55,70 @@
 								</el-col>
 								<el-col :span="4">
 									<div style="width: 100%;height:28px;border: solid 1px rgb(220, 223, 230);border-radius: 4px;text-align: center;"
-									 @click="handleChangeNodeSchema"><span style="line-height: 28px;" :style="{color: is3DNode?'#409EFF':'#606266'}">2.5d</span></div>
+										@click="handleChangeNodeSchema"><span style="line-height: 28px;"
+											:style="{color: is3DNode?'#409EFF':'#606266'}">2.5d</span></div>
 								</el-col>
 
 							</el-row>
 							<el-card v-if="nodeSchema">
 								<div>
 									<span>{{ nodeSchema.title }}</span>
-									<el-button style="float: right; padding: 3px 0;" type="text" @click="outputNodeHandler">输出引用</el-button>
-									<el-button style="float: right; padding: 3px 0;margin-right: 10px;" type="text" @click="drawNodeRect">标记位置</el-button>
+									<el-button style="float: right; padding: 3px 0;" type="text"
+										@click="outputNodeHandler">输出引用</el-button>
+									<el-button style="float: right; padding: 3px 0;margin-right: 10px;" type="text"
+										@click="drawNodeRect">标记位置</el-button>
 								</div>
 								<hr style="margin: 10px 0;" />
 								<div>
-									<el-row style="height: 28px;margin-bottom:3px;" v-for="(row, ri) in nodeSchema.rows" :key="ri">
-										<el-col v-for="(col, ci) in row" :key="ci" :span="col.span" style="text-align: left;line-height: 28px;">
+									<el-row style="height: 28px;margin-bottom:3px;" v-for="(row, ri) in nodeSchema.rows"
+										:key="ri">
+										<el-col v-for="(col, ci) in row" :key="ci" :span="col.span"
+											style="text-align: left;line-height: 28px;">
 											<span v-if="col.type == 'label'">{{col.field}}</span>
-											<el-input-number v-if="col.type == 'number'" v-model="node[col.field]" controls-position="right" size="mini"
-											 style="width: 100%;"></el-input-number>
-											<el-input-number v-if="col.type == '3DAngle'" v-model="node.eulerAngles[col.field]" controls-position="right"
-											 size="mini" style="width: 100%;"></el-input-number>
-											<el-input v-if="col.type == 'input'" v-model="node[col.field]" size="mini"></el-input>
-											<el-color-picker v-if="col.type == 'color'" :ref="col.key" size="mini" v-model="node[col.field]"></el-color-picker>
+											<el-input-number v-if="col.type == 'number'" v-model="node[col.field]"
+												controls-position="right" size="mini" style="width: 100%;">
+											</el-input-number>
+											<el-input-number v-if="col.type == '3DAngle'"
+												v-model="node.eulerAngles[col.field]" controls-position="right"
+												size="mini" style="width: 100%;"></el-input-number>
+											<el-input v-if="col.type == 'input'" v-model="node[col.field]" size="mini">
+											</el-input>
+											<el-color-picker v-if="col.type == 'color'" :ref="col.key" size="mini"
+												v-model="node[col.field]"></el-color-picker>
 										</el-col>
 									</el-row>
 								</div>
 							</el-card>
-							<el-card v-for="(section,index) in componentsSchema" :key="section.key" style="margin: 10px 0;">
+							<el-card v-for="(section,index) in componentsSchema" :key="section.key"
+								style="margin: 10px 0;">
 								<div>
 									<el-checkbox v-model="node[section.key].enabled">{{ section.title }}</el-checkbox>
-									<el-button style="float: right; padding: 3px 0" type="text" @click="outputComponentHandler(section.key)">输出引用</el-button>
+									<el-button style="float: right; padding: 3px 0" type="text"
+										@click="outputComponentHandler(section.key)">输出引用</el-button>
 								</div>
 								<hr v-if="section.rows" style="margin: 10px 0;" />
 								<div>
-									<el-row style="height: 28px;margin-bottom:3px;" v-for="(row,ri) in section.rows" :key="ri">
-										<el-col v-for="(col,ci) in row" :key="ci" :span="col.span" style="text-align: left;line-height: 28px;">
+									<el-row style="height: 28px;margin-bottom:3px;" v-for="(row,ri) in section.rows"
+										:key="ri">
+										<el-col v-for="(col,ci) in row" :key="ci" :span="col.span"
+											style="text-align: left;line-height: 28px;">
 											<span v-if="col.type == 'label'">{{col.field}}</span>
-											<el-input-number v-if="col.type == 'number'" v-model="node[section.key][col.field]" controls-position="right"
-											 size="mini" style="width: 100%;"></el-input-number>
-											<el-input v-if="col.type == 'input'" v-model="node[section.key][col.field]" size="mini"></el-input>
-											<el-input v-if="col.type == 'textarea'" type="textarea" :rows="1" v-model="node[section.key][col.field]"
-											 size="mini">
+											<el-input-number v-if="col.type == 'number'"
+												v-model="node[section.key][col.field]" controls-position="right"
+												size="mini" style="width: 100%;"></el-input-number>
+											<el-input v-if="col.type == 'input'" v-model="node[section.key][col.field]"
+												size="mini"></el-input>
+											<el-input v-if="col.type == 'textarea'" type="textarea" :rows="1"
+												v-model="node[section.key][col.field]" size="mini">
 											</el-input>
-											<el-color-picker v-if="col.type == 'color'" :ref="col.key" size="mini" v-model="node[section.key][col.field]"></el-color-picker>
-											<el-checkbox v-if="col.type == 'bool'" v-model="node[section.key][col.field]"></el-checkbox>
-											<el-select v-if="col.type == 'select'" v-model="node[section.key][col.field]" size="mini">
-												<el-option v-for="item in col.options" :key="item.value" :label="item.label" :value="item.value">
+											<el-color-picker v-if="col.type == 'color'" :ref="col.key" size="mini"
+												v-model="node[section.key][col.field]"></el-color-picker>
+											<el-checkbox v-if="col.type == 'bool'"
+												v-model="node[section.key][col.field]"></el-checkbox>
+											<el-select v-if="col.type == 'select'"
+												v-model="node[section.key][col.field]" size="mini">
+												<el-option v-for="item in col.options" :key="item.value"
+													:label="item.label" :value="item.value">
 												</el-option>
 											</el-select>
 										</el-col>
@@ -128,6 +130,7 @@
 				</Split>
 			</div>
 		</Split>
+		<!-- 控制按钮 -->
 		<div id="panelCtl" style="position:absolute;left:5px;top:50px;height: 50px;display: flex;align-items: center;">
 			<el-popover width="150" placement="top-start" trigger="click">
 				<el-button type="info" icon="el-icon-setting" circle slot="reference" size="mini"></el-button>
@@ -137,8 +140,8 @@
 							节点树
 						</el-col>
 						<el-col :span="12">
-							<el-switch style="margin: 5px;" v-model="isDevMode" @change="handleChangeMode" active-color="#0099ff"
-							 inactive-color="gray">
+							<el-switch style="margin: 5px;" v-model="isDevMode" @change="handleChangeMode"
+								active-color="#0099ff" inactive-color="gray">
 							</el-switch>
 						</el-col>
 					</el-row>
@@ -147,8 +150,8 @@
 							FPS
 						</el-col>
 						<el-col :span="12">
-							<el-switch style="margin: 5px;" v-model="isShowFPS" @change="handleChangeStats" active-color="#0099ff"
-							 inactive-color="gray">
+							<el-switch style="margin: 5px;" v-model="isShowFPS" @change="handleChangeStats"
+								active-color="#0099ff" inactive-color="gray">
 							</el-switch>
 						</el-col>
 					</el-row>
@@ -157,8 +160,8 @@
 							帧时间
 						</el-col>
 						<el-col :span="12">
-							<el-switch style="margin: 5px;" v-model="isShowMS" @change="handleChangeStats" active-color="#0099ff"
-							 inactive-color="gray">
+							<el-switch style="margin: 5px;" v-model="isShowMS" @change="handleChangeStats"
+								active-color="#0099ff" inactive-color="gray">
 							</el-switch>
 						</el-col>
 					</el-row>
@@ -167,8 +170,29 @@
 							内存
 						</el-col>
 						<el-col :span="12">
-							<el-switch style="margin: 5px;" v-model="isShowMB" @change="handleChangeStats" active-color="#0099ff"
-							 inactive-color="gray">
+							<el-switch style="margin: 5px;" v-model="isShowMB" @change="handleChangeStats"
+								active-color="#0099ff" inactive-color="gray">
+							</el-switch>
+						</el-col>
+					</el-row>
+					<!-- TODO: -->
+					<!-- <el-row style="margin:5px 0;">
+						<el-col :span="12" style="text-align:left;padding-top:7px;padding-left:5px;">
+							缓存
+						</el-col>
+						<el-col :span="12">
+							<el-switch style="margin: 5px;" v-model="isShowCache" @change="handleChangeCachePanel"
+								active-color="#0099ff" inactive-color="gray">
+							</el-switch>
+						</el-col>
+					</el-row> -->
+					<el-row style="margin:5px 0;">
+						<el-col :span="12" style="text-align:left;padding-top:7px;padding-left:5px;">
+							暗黑主题
+						</el-col>
+						<el-col :span="12">
+							<el-switch style="margin: 5px;" v-model="isDarkTheme" @change="handleChangeTheme"
+								active-color="#0099ff" inactive-color="gray">
 							</el-switch>
 						</el-col>
 					</el-row>
@@ -186,430 +210,26 @@
 			</el-popover>
 		</div>
 	</div>
+	<!-- 缓存面板弹窗 -->
+	<Modal v-model="isShowCache" width="800" :mask-closable="false" :mask="false" scrollable @on-cancel="closeCachePanel()" :title="cacheTitle" footer-hide="true">
+		<i-table border :columns="cacheColumns" height="600" size="small" :data="cacheData" :loading="cacheDataLoading">
+			<template slot-scope="{ row, index }" slot="cache_preview">
+				<img :src="window.location.href + row.id" style="max-height: 40px;max-width: 120px;" v-if="row.type === 'png' || row.type === 'jpg'">
+				<div v-if="row.type !== 'png' && row.type !== 'jpg'" style="max-height: 40px;">_</div>
+			</template>
+			<template slot-scope="{ row, index }" slot="cache_action">
+				<i-button type="primary" size="small" @click="showCacheItem(row.id)">Detail</i-button>
+				<i-button type="error" size="small" @click="releaseCacheItem(row.id)">Release</i-button>
+			</template>
+		</i-table>
+	</Modal>
 </div>
 
-<script type="text/javascript" charset="utf-8" src="app/editor/static/preview-templates/ccc-devtools/js/vue.min.js"></script>
-<script type="text/javascript" charset="utf-8" src="app/editor/static/preview-templates/ccc-devtools/js/vue-beauty.min.js"></script>
-<script src="app/editor/static/preview-templates/ccc-devtools/js/element-ui.js"></script>
-<script type="text/javascript" charset="utf-8" src="app/editor/static/preview-templates/ccc-devtools/js/iview.js"></script>
-<script type="text/javascript" charset="utf-8" src="app/editor/static/preview-templates/ccc-devtools/js/stats.min.js"></script>
+<script type="text/javascript" charset="utf-8" src="app/editor/static/preview-templates/ccc-devtools/libs/vue/vue.min.js"></script>
+<script type="text/javascript" charset="utf-8" src="app/editor/static/preview-templates/ccc-devtools/libs/vue-beauty/js/vue-beauty.min.js"></script>
+<script type="text/javascript" charset="utf-8" src="app/editor/static/preview-templates/ccc-devtools/libs/element/js/element-ui.js"></script>
+<script type="text/javascript" charset="utf-8" src="app/editor/static/preview-templates/ccc-devtools/libs/iview/js/iview.js"></script>
+<script type="text/javascript" charset="utf-8" src="app/editor/static/preview-templates/ccc-devtools/libs/stats/stats.min.js"></script>
+<script type="text/javascript" charset="utf-8" src="app/editor/static/preview-templates/ccc-devtools/config.js"></script>
+<script type="text/javascript" charset="utf-8" src="app/editor/static/preview-templates/ccc-devtools/js/app.js"></script>
 
-<script type="text/javascript" src="app/editor/static/preview-templates/ccc-devtools/config.js"></script>
-<script>
-	let app = new Vue({
-		el: '#app',
-		data: {
-			needUpdate: false,
-			is3DNode: false,
-			isDevMode: false,
-			isShowFPS: false,
-			isShowMS: false,
-			isShowMB: false,
-			isAutoRefreshTree: true,
-			filterText: '',
-			splitLeft: 0.7,
-			splitRight: 0.5,
-			defaultExpandedKeys: [],
-			sceneTreeData: [],
-			nodeProps: {
-				children: 'children',
-				label: 'name',
-				isLeaf: 'leaf'
-			},
-			node: null,
-			nodeSchema: {},
-			componentsSchema: [],
-			intervalId: -1,
-		},
-		methods: {
-			api: function (url, cb) {
-				let xhr = new XMLHttpRequest();
-				xhr.onreadystatechange = function () {
-					if (xhr.readyState == 4 && (xhr.status >= 200 && xhr.status < 400)) {
-						let response = xhr.responseText;
-						cb(JSON.parse(xhr.responseText));
-					}
-				};
-				xhr.open("GET", url, true);
-				xhr.send();
-			},
-			compareVersion: function (localVersion, remoteVersion) {
-				let vL = localVersion.split('.');
-				let vR = remoteVersion.split('.');
-				for (let i = 0; i < vL.length; ++i) {
-					let a = parseInt(vL[i], 10);
-					let b = parseInt(vR[i] || '0', 10);
-					if (a === b) {
-						continue;
-					} else if (a > b) {
-						return false;
-					} else if (a < b) {
-						return true;
-					}
-				}
-				if (vR.length > vL.length) {
-					return true;
-				} else {
-					return false;
-				}
-			},
-			checkVersion: function () {
-				this.api('https://raw.githubusercontent.com/potato47/ccc-devtools/master/version.json', (data) => {
-					let remoteVersion = data.version;
-					this.api('app/editor/static/preview-templates/ccc-devtools/version.json', (data) => {
-						let localVersion = data.version;
-						versionStatus = this.compareVersion(localVersion, remoteVersion);
-						this.$data.needUpdate = versionStatus;
-						console.groupCollapsed('ccc-devtoos')
-						console.log('本地版本：' + localVersion);
-						console.log('远程版本：' + remoteVersion);
-						console.log('更新地址：' + 'https://github.com/potato47/ccc-devtools.git');
-						console.groupEnd('ccc-devtoos');
-					});
-				});
-			},
-			handleRefreshTree() {
-				this.$data.sceneTreeData = [];
-				setTimeout(() => {
-					this.updateTreeData();
-				}, 0);
-			},
-			handleSwitchTreeMode() {
-
-			},
-			updateTreeData() {
-				this.$data.sceneTreeData = cc.director.getScene().children;
-				this.defaultExpandedKeys = [this.$data.sceneTreeData[0]._id];
-			},
-			handleNodesSelect(nodes) {
-				if (nodes.length === 1) {
-					this.handleNodeClick(nodes[0]);
-				} else {
-					this.handleNodeClick(null);
-				}
-			},
-			handleNodeClick(node) {
-				if (node) {
-					this.$data.node = node;
-					cc.js.getset(node, 'hex_color', () => {
-						return '#' + node.color.toHEX('#rrggbb');
-					}, (hex) => {
-						node.color = new cc.Color().fromHEX(hex);
-					}, false, true);
-					let superPreLoad = node._onPreDestroy;
-					node._onPreDestroy = () => {
-						superPreLoad.apply(node);
-						if (this.$data && this.$data.node === node) {
-							this.$data.node = null;
-						}
-					}
-					this.$data.nodeSchema = this.$data.is3DNode ? NEX_CONFIG.nodeSchema.node3d : NEX_CONFIG.nodeSchema.node2d;
-					let componentsSchema = [];
-					for (let component of node._components) {
-						let schema = NEX_CONFIG.componentsSchema[component.__classname__];
-						if (schema) {
-							node[schema.key] = node.getComponent(schema.key);
-							for (let i = 0; i < schema.rows.length; i++) {
-								for (let j = 0; j < schema.rows[i].length; j++) {
-									if (schema.rows[i][j].type === 'color') {
-										cc.js.getset(node[schema.key], schema.rows[i][j].field, () => {
-											return '#' + node.getComponent(schema.key)[schema.rows[i][j].rawField].toHEX('#rrggbb');
-										}, (hex) => {
-											node.getComponent(schema.key)[schema.rows[i][j].rawField] = new cc.Color().fromHEX(hex);
-										}, false, true);
-									}
-								}
-							}
-						} else {
-							schema = {
-								title: component.__classname__,
-								key: component.__classname__
-							};
-							node[schema.key] = node.getComponent(schema.key);
-						}
-						componentsSchema.push(schema);
-					}
-					this.$data.componentsSchema = componentsSchema;
-				} else {
-					this.$data.node = null;
-				}
-			},
-			outputNodeHandler(target) {
-				let i = 1;
-				while (window['temp' + i] !== undefined) {
-					i++;
-				}
-				window['temp' + i] = this.$data.node;
-				console.log('temp' + i);
-				console.log(window['temp' + i]);
-			},
-			outputComponentHandler(data) {
-				let i = 1;
-				while (window['temp' + i] !== undefined) {
-					i++;
-				}
-				window['temp' + i] = this.$data.node.getComponent(data);
-				console.log('temp' + i);
-				console.log(window['temp' + i]);
-			},
-			drawNodeRect(node) {
-				cc.where(this.$data.node);
-			},
-			openGithub() {
-				window.open('https://github.com/potato47/ccc-devtools');
-			},
-			filterNode(value, node) {
-				if (!value) return true;
-				return node.name.toLowerCase().indexOf(value.toLowerCase()) !== -1;
-			},
-			openDevMode() {
-				setTimeout(() => {
-					cc.js.getset(cc.Node.prototype, 'isLeaf', function () {
-						return this.childrenCount === 0;
-					}, function (value) {
-
-					}, false, true);
-					let top = document.getElementById('top')
-					top.appendChild(document.getElementsByClassName('toolbar')[0]);
-					document.getElementById('game_panel').appendChild(document.getElementById('content'));
-					let scene = cc.director.getScene();
-					if (scene) {
-						this.updateTreeData();
-					}
-					cc.director.on(cc.Director.EVENT_AFTER_SCENE_LAUNCH, () => {
-						this.updateTreeData();
-					}, this);
-					cc.director.on(cc.Director.EVENT_BEFORE_SCENE_LOADING, () => {
-						this.$data.node = null;
-						this.$data.sceneTreeData = [];
-						this.$data.treeParam = [];
-					}, this);
-					localStorage.setItem('isDevMode', 1);
-				}, 0);
-			},
-			closeDevMode() {
-				this.$data.node = null;
-				this.$data.sceneTreeData = [];
-				cc.director.targetOff(this);
-				clearInterval(this.$data.intervalId);
-				document.body.appendChild(document.getElementsByClassName('toolbar')[0]);
-				document.body.appendChild(document.getElementById('content'));
-				localStorage.setItem('isDevMode', 0);
-			},
-			handleChangeNodeSchema() {
-				if (this.is3DNode) {
-					this.is3DNode = false;
-				} else {
-					this.is3DNode = true;
-				}
-				this.$data.nodeSchema = this.$data.is3DNode ? NEX_CONFIG.nodeSchema.node3d : NEX_CONFIG.nodeSchema.node2d;
-			},
-			handleChangeMode(data) {
-				data ? this.openDevMode() : this.closeDevMode();
-			},
-			handleChangeStats() {
-				let panels = document.getElementsByClassName('statsPanel');
-				while (panels.length > 0) {
-					panels[0].parentElement.removeChild(panels[0]);
-				}
-				let newPanels = [];
-				let array = [];
-				this.$data.isShowFPS ? (array.push(0) && localStorage.setItem('isShowFPS', '1')) : localStorage.setItem(
-					'isShowFPS', '0');
-				this.$data.isShowMS ? (array.push(1) && localStorage.setItem('isShowMS', '1')) : localStorage.setItem('isShowMS',
-					'0');
-				this.$data.isShowMB ? (array.push(2) && localStorage.setItem('isShowMB', '1')) : localStorage.setItem('isShowMB',
-					'0');
-				for (let i of array) {
-					let stats = new Stats();
-					stats.showPanel(i); // 0: fps, 1: ms, 2: mb, 3+: custom
-					stats.dom.style.position = 'relative';
-					stats.dom.style.float = 'right';
-					stats.dom.style.marginLeft = '10px';
-					stats.dom.style.marginBottom = '10px';
-					stats.dom.style.pointerEvents = 'none';
-					stats.dom.className = 'statsPanel';
-					document.getElementById('panelCtl').appendChild(stats.dom);
-					newPanels.push(stats);
-				}
-
-				function animate() {
-					for (let i = 0; i < newPanels.length; i++) {
-						let stats = newPanels[i];
-						stats.update();
-					}
-					requestAnimationFrame(animate);
-				}
-				animate();
-			},
-			fitFullScreen() {
-				document.getElementsByClassName('toolbar')[0].style.display = 'none';
-				let gameDiv = document.getElementById('GameDiv');
-				let gameContainer = document.getElementById('Cocos2dGameContainer');
-				let gameCanvas = document.getElementById('GameCanvas');
-				gameDiv.style.width = '100%';
-				gameDiv.style.height = '100%';
-				gameCanvas.style.width = '100%';
-				gameCanvas.style.height = '100%';
-				// document.body.style.cssText+="-webkit-transform: rotate(-90deg);-moz-transform: rotate(-90deg)";
-			},
-			initConsoleUtil() {
-				if (cc.tree) return;
-				cc.tree = function (key) {
-					let index = key || 0;
-					let treeNode = function (node) {
-						let nameStyle =
-							`color: ${node.parent === null || node.activeInHierarchy ? 'green' : 'grey'}; font-size: 14px;font-weight:bold`;
-						let propStyle =
-							`color: black; background: lightgrey;margin-left: 5px;border-radius:3px;padding: 0 3px;font-size: 10px;font-weight:bold`;
-						let indexStyle =
-							`color: orange; background: black;margin-left: 5px;border-radius:3px;padding:0 3px;fonrt-size: 10px;font-weight:bold;`
-						let nameValue = `%c${node.name}`;
-						let propValue =
-							`%c${node.x.toFixed(0) + ',' + node.y.toFixed(0) + ',' + node.width.toFixed(0) + ',' + node.height.toFixed(0) + ',' + node.scale.toFixed(1)}`
-						let indexValue = `%c${index++}`;
-						if (node.childrenCount > 0) {
-							console.groupCollapsed(nameValue + propValue + indexValue, nameStyle, propStyle, indexStyle);
-							for (let i = 0; i < node.childrenCount; i++) {
-								treeNode(node.children[i]);
-							}
-							console.groupEnd();
-						} else {
-							console.log(nameValue + propValue + indexValue, nameStyle, propStyle, indexStyle);
-						}
-					}
-					if (key) {
-						let node = cc.cat(key);
-						index = node['tempIndex'];
-						treeNode(node);
-					} else {
-						let scene = cc.director.getScene();
-						treeNode(scene);
-					}
-					return '属性依次为x,y,width,height,scale.使用cc.cat(id)查看详细属性.';
-				}
-				cc.cat = function (key) {
-					let index = 0;
-					let target;
-					let sortId = function (node) {
-						if (target) return;
-						if (cc.js.isNumber(key)) {
-							if (key === index++) {
-								target = node;
-								return;
-							}
-						} else {
-							if (key.toLowerCase() === node.name.toLowerCase()) {
-								target = node;
-								return;
-							} else {
-								index++;
-							}
-						}
-						if (node.childrenCount > 0) {
-							for (let i = 0; i < node.childrenCount; i++) {
-								sortId(node.children[i]);
-							}
-						}
-					}
-					let scene = cc.director.getScene();
-					sortId(scene);
-					target['tempIndex'] = cc.js.isNumber(key) ? key : index;
-					return target;
-				}
-				cc.list = function (key) {
-					let targets = [];
-					let step = function (node) {
-						if (node.name.toLowerCase().indexOf(key.toLowerCase()) > -1) {
-							targets.push(node);
-						}
-						if (node.childrenCount > 0) {
-							for (let i = 0; i < node.childrenCount; i++) {
-								step(node.children[i]);
-							}
-						}
-					}
-					let scene = cc.director.getScene();
-					step(scene);
-					if (targets.length === 1) {
-						return targets[0];
-					} else {
-						return targets;
-					}
-				}
-				cc.where = function (key) {
-					let target = key.name ? key : cc.cat(key);
-					if (!target) {
-						return null;
-					}
-					let rect = target.getBoundingBoxToWorld();
-					let borderNode = new cc.Node();
-					let bgNode = new cc.Node();
-					let graphics = bgNode.addComponent(cc.Graphics);
-					let canvas = cc.find('Canvas');
-					canvas.addChild(bgNode);
-					bgNode.addChild(borderNode);
-					bgNode.position = canvas.convertToNodeSpaceAR(rect.center);
-					let isZeroSize = rect.width === 0 || rect.height === 0;
-					if (isZeroSize) {
-						graphics.circle(0, 0, 100);
-						graphics.fillColor = cc.Color.GREEN;
-						graphics.fill();
-					} else {
-						bgNode.width = rect.width;
-						bgNode.height = rect.height;
-						graphics.rect(-bgNode.width / 2, -bgNode.height / 2, bgNode.width, bgNode.height);
-						graphics.strokeColor = cc.Color.RED;
-						graphics.lineWidth = 10;
-						graphics.stroke()
-					}
-					setTimeout(() => {
-						if (cc.isValid(bgNode)) {
-							bgNode.destroy();
-						}
-					}, 2000);
-					return target;
-				}
-			}
-		},
-		watch: {
-			filterText(val) {
-				this.$refs.sceneTree.filter(val);
-				// console.log(val);
-			}
-		},
-		created: function () {
-			this.checkVersion();
-			document.body.insertBefore(document.getElementById('app'), document.body.firstChild);
-
-			let onCCInit = () => {
-				this.initConsoleUtil();
-				if (cc.sys.isMobile) {
-					this.fitFullScreen();
-				}
-				if (localStorage.getItem('isDevMode') === '1') {
-					this.$data.isDevMode = true;
-					this.openDevMode();
-				} else {
-					this.$data.isDevMode = false;
-				}
-				this.$data.isShowFPS = localStorage.getItem('isShowFPS') === '1';
-				this.$data.isShowMS = localStorage.getItem('isShowMS') === '1';
-				this.$data.isShowMB = localStorage.getItem('isShowMB') === '1';
-				setTimeout(() => {
-					this.handleChangeStats();
-				}, 0);
-			}
-			let checkCC = () => {
-				if (window.cc) {
-					onCCInit();
-					clearInterval(this.$data.intervalId);
-				} else {
-					// console.log('cc is not init');
-				}
-			}
-			this.$data.intervalId = setInterval(checkCC, 500);
-			setTimeout(checkCC, 0);
-		},
-	});
-</script>
