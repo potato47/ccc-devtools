@@ -147,36 +147,15 @@
 					</el-row>
 					<el-row style="margin:5px 0;">
 						<el-col :span="12" style="text-align:left;padding-top:7px;padding-left:5px;">
-							FPS
+							调试信息
 						</el-col>
 						<el-col :span="12">
-							<el-switch style="margin: 5px;" v-model="isShowFPS" @change="handleChangeStats"
+							<el-switch style="margin: 5px;" v-model="isShowProfile" @change="handleChangeStats"
 								active-color="#0099ff" inactive-color="gray">
 							</el-switch>
 						</el-col>
 					</el-row>
 					<el-row style="margin:5px 0;">
-						<el-col :span="12" style="text-align:left;padding-top:7px;padding-left:5px;">
-							帧时间
-						</el-col>
-						<el-col :span="12">
-							<el-switch style="margin: 5px;" v-model="isShowMS" @change="handleChangeStats"
-								active-color="#0099ff" inactive-color="gray">
-							</el-switch>
-						</el-col>
-					</el-row>
-					<el-row style="margin:5px 0;">
-						<el-col :span="12" style="text-align:left;padding-top:7px;padding-left:5px;">
-							内存
-						</el-col>
-						<el-col :span="12">
-							<el-switch style="margin: 5px;" v-model="isShowMB" @change="handleChangeStats"
-								active-color="#0099ff" inactive-color="gray">
-							</el-switch>
-						</el-col>
-					</el-row>
-					<!-- TODO: -->
-					<!-- <el-row style="margin:5px 0;">
 						<el-col :span="12" style="text-align:left;padding-top:7px;padding-left:5px;">
 							缓存
 						</el-col>
@@ -185,7 +164,7 @@
 								active-color="#0099ff" inactive-color="gray">
 							</el-switch>
 						</el-col>
-					</el-row> -->
+					</el-row>
 					<el-row style="margin:5px 0;">
 						<el-col :span="12" style="text-align:left;padding-top:7px;padding-left:5px;">
 							暗黑主题
@@ -214,12 +193,15 @@
 	<Modal v-model="isShowCache" width="800" :mask-closable="false" :mask="false" scrollable @on-cancel="closeCachePanel()" :title="cacheTitle" footer-hide="true">
 		<i-table border :columns="cacheColumns" height="600" size="small" :data="cacheData" :loading="cacheDataLoading">
 			<template slot-scope="{ row, index }" slot="cache_preview">
-				<img :src="window.location.href + row.id" style="max-height: 40px;max-width: 120px;" v-if="row.type === 'png' || row.type === 'jpg'">
-				<div v-if="row.type !== 'png' && row.type !== 'jpg'" style="max-height: 40px;">_</div>
+				<img :src="window.location.href + row.preview" style="max-height: 40px;max-width: 120px;" v-if="row.preview">
+				<div v-if="!row.preview" style="max-height: 40px;">_</div>
 			</template>
 			<template slot-scope="{ row, index }" slot="cache_action">
 				<i-button type="primary" size="small" @click="showCacheItem(row.id)">Detail</i-button>
 				<i-button type="error" size="small" @click="releaseCacheItem(row.id)">Release</i-button>
+			</template>
+			<template slot-scope="{ row, index }" slot="cache_size">
+				{{row.size !== -1 ? row.size + 'MB' : '_'}}
 			</template>
 		</i-table>
 	</Modal>
@@ -229,7 +211,7 @@
 <script type="text/javascript" charset="utf-8" src="app/editor/static/preview-templates/ccc-devtools/libs/vue-beauty/js/vue-beauty.min.js"></script>
 <script type="text/javascript" charset="utf-8" src="app/editor/static/preview-templates/ccc-devtools/libs/element/js/element-ui.js"></script>
 <script type="text/javascript" charset="utf-8" src="app/editor/static/preview-templates/ccc-devtools/libs/iview/js/iview.js"></script>
-<script type="text/javascript" charset="utf-8" src="app/editor/static/preview-templates/ccc-devtools/libs/stats/stats.min.js"></script>
+<script type="text/javascript" charset="utf-8" src="app/editor/static/preview-templates/ccc-devtools/libs/stats/Stats.js"></script>
 <script type="text/javascript" charset="utf-8" src="app/editor/static/preview-templates/ccc-devtools/config.js"></script>
 <script type="text/javascript" charset="utf-8" src="app/editor/static/preview-templates/ccc-devtools/js/app.js"></script>
 

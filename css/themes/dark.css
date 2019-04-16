@@ -66,3 +66,10 @@
 	color: #59a !important;
 	background-color: #222 !important;
 }
+
+.ivu-modal-content,
+.ivu-table-column-center,
+.ivu-modal-header-inner {
+	background-color: #222 !important;
+	color: #bbb !important;
+}

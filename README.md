@@ -1,5 +1,5 @@
-# ccc-devtools v2.2.0
-Cocos Creator 网页调试器，运行时查看、修改节点树，实时更新节点属性。
+# ccc-devtools v2.3.0
+Cocos Creator 网页调试工具，运行时查看、修改节点树，实时更新节点属性，可视化显示缓存资源。
 
 ## 预览
 
@@ -24,6 +24,9 @@ v2.1.0: 区分手动刷新和自动刷新两种模式，手动刷新时支持搜
 
 v2.2.0: 新增黑色主题(感谢[@wheatup](https://github.com/wheatup) )
 ![dark-theme](./screenshots/dark-theme.png)
+
+v2.3.0: 添加缓存资源查看面板；简化调试信息显示，新增纹理内存挂件。
+![cache](./screenshots/preview_cache.png)
 
 ## 使用
 

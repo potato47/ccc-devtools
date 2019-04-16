@@ -4,9 +4,7 @@ let app = new Vue({
         needUpdate: false,
         is3DNode: false,
         isDevMode: false,
-        isShowFPS: false,
-        isShowMS: false,
-        isShowMB: false,
+        isShowProfile: true,
         isShowCache: false,
         isAutoRefreshTree: true,
         isDarkTheme: false,
@@ -64,22 +62,23 @@ let app = new Vue({
             sortable: true
         }, {
             title: 'Size',
+            slot: 'cache_size',
             key: 'size',
             align: 'center',
             width: 120,
             sortable: true
-        }, {
-            title: 'Queue',
-            key: 'queueId',
-            sortable: true,
-            width: 120,
-            align: 'center'
         }, {
             title: 'Preview',
             slot: 'cache_preview',
             align: 'center',
             width: 150
         }, {
+            title: 'Queue',
+            key: 'queueId',
+            sortable: true,
+            width: 120,
+            align: 'center'
+        },{
             title: 'Action',
             slot: 'cache_action',
             width: 150,
@@ -243,47 +242,60 @@ let app = new Vue({
             return node.name.toLowerCase().indexOf(value.toLowerCase()) !== -1;
         },
         openCachePanel() {
-            console.log('open cache panel');
             this.$data.cacheDataLoading = true;
             setTimeout(() => {
                 let rawCacheData = cc.loader._cache;
                 let cacheData = [];
+                let totalTextureSize = 0;
                 for (let k in rawCacheData) {
                     let item = rawCacheData[k];
                     // console.log(item)
                     if (item.type !== 'js' && item.type !== 'json') {
                         let itemName = '_';
-                        if (item.type === 'png' && item.type !== 'jpg') {
-                            let texture = rawCacheData[k.replace('.png', '.json')];
+                        let preview = '';
+                        let content = item.content.__classname__ ? item.content.__classname__ : item.type;
+                        let formatSize = -1;
+                        if (item.type === 'png' || item.type === 'jpg') {
+                            let texture = rawCacheData[k.replace('.' + item.type, '.json')];
                             if (texture && texture._owner && texture._owner._name) {
                                 itemName = texture._owner._name;
+                                preview = texture.content.url;
                             }
-                        } 
-                        else {
+                        } else {
                             if (item.content.name && item.content.name.length > 0) {
                                 itemName = item.content.name;
                             } else if (item._owner) {
                                 itemName = item._owner.name || '_';
+                            }
+                            if (content === 'cc.Texture2D') {
+                                let texture = item.content;
+                                preview = texture.url;
+                                let textureSize = texture.width * texture.height * ((texture._native === '.jpg' ? 3 : 4) / 1024 / 1024);
+                                totalTextureSize += textureSize;
+                                // sizeStr = textureSize.toFixed(3) + 'M';
+                                formatSize = Math.round(textureSize * 1000) / 1000;
+                            } else if (content === 'cc.SpriteFrame') {
+                                preview = item.content._texture.url;
                             }
                         }
                         cacheData.push({
                             queueId: item.queueId,
                             type: item.type,
                             name: itemName,
+                            preview: preview,
                             id: item.id,
-                            content: item.content.__classname__ ? item.content.__classname__ : item.type,
-                            size: Math.random() * 10000 | 0
+                            content: content,
+                            size: formatSize
                         });
                     }
                 }
                 this.$data.cacheData = cacheData;
-                this.$data.cacheTitle = `缓存 [文件总数:${cacheData.length}]`;
+                this.$data.cacheTitle = `缓存 [文件总数:${cacheData.length}][纹理缓存:${totalTextureSize.toFixed(2) + 'M'}]`;
                 this.$data.cacheDataLoading = false;
             }, 0);
-            
+
         },
         closeCachePanel() {
-            console.log('close cache panel');
             this.$data.cacheData = [];
             this.$data.cacheTitle = `缓存`;
         },
@@ -337,42 +349,34 @@ let app = new Vue({
             data ? this.openCachePanel() : this.closeCachePanel();
         },
         handleChangeStats() {
-            let panels = document.getElementsByClassName('statsPanel');
-            while (panels.length > 0) {
-                panels[0].parentElement.removeChild(panels[0]);
-            }
-            let newPanels = [];
-            let array = [];
-            this.$data.isShowFPS ? (array.push(0) && localStorage.setItem('isShowFPS', '1')) : localStorage
-                .setItem(
-                    'isShowFPS', '0');
-            this.$data.isShowMS ? (array.push(1) && localStorage.setItem('isShowMS', '1')) : localStorage
-                .setItem('isShowMS',
-                    '0');
-            this.$data.isShowMB ? (array.push(2) && localStorage.setItem('isShowMB', '1')) : localStorage
-                .setItem('isShowMB',
-                    '0');
-            for (let i of array) {
+            if (this.$data.isShowProfile) {
+                let addStats = function(stats) {
+                    stats.dom.style.position = 'relative';
+                    stats.dom.style.float = 'right';
+                    stats.dom.style.marginLeft = '10px';
+                    stats.dom.style.marginBottom = '10px';
+                    // stats.dom.style.pointerEvents = 'none';
+                    stats.dom.className = 'statsPanel';
+                    document.getElementById('panelCtl').appendChild(stats.dom);
+                    localStorage.setItem('isShowProfile', '1')
+                }
+                let animate = () => {
+                    if (this.$data.isShowProfile) {
+                        stats.update();
+                        requestAnimationFrame(animate);
+                    }
+                }
                 let stats = new Stats();
-                stats.showPanel(i); // 0: fps, 1: ms, 2: mb, 3+: custom
-                stats.dom.style.position = 'relative';
-                stats.dom.style.float = 'right';
-                stats.dom.style.marginLeft = '10px';
-                stats.dom.style.marginBottom = '10px';
-                stats.dom.style.pointerEvents = 'none';
-                stats.dom.className = 'statsPanel';
-                document.getElementById('panelCtl').appendChild(stats.dom);
-                newPanels.push(stats);
+                addStats(stats);
+                animate();
+            } else {
+                let panels = document.getElementsByClassName('statsPanel');
+                while (panels.length > 0) {
+                    panels[0].parentElement.removeChild(panels[0]);
+                }
+                localStorage.setItem('isShowProfile', '0');
             }
 
-            function animate() {
-                for (let i = 0; i < newPanels.length; i++) {
-                    let stats = newPanels[i];
-                    stats.update();
-                }
-                requestAnimationFrame(animate);
-            }
-            animate();
         },
         handleChangeTheme(isDark) {
             isDark ? this.addDarkTheme() : this.removeDarkTheme();
@@ -558,9 +562,7 @@ let app = new Vue({
             } else {
                 this.$data.isDarkTheme = false;
             }
-            this.$data.isShowFPS = localStorage.getItem('isShowFPS') === '1';
-            this.$data.isShowMS = localStorage.getItem('isShowMS') === '1';
-            this.$data.isShowMB = localStorage.getItem('isShowMB') === '1';
+            this.$data.isShorProfile = localStorage.getItem('isShorProfile') === '1';
             setTimeout(() => {
                 this.handleChangeStats();
             }, 0);
