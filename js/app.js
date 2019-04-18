@@ -4,7 +4,7 @@ let app = new Vue({
         needUpdate: false,
         is3DNode: false,
         isDevMode: false,
-        isShowProfile: true,
+        isShowProfile: false,
         isShowCache: false,
         isAutoRefreshTree: true,
         isDarkTheme: false,
@@ -407,12 +407,6 @@ let app = new Vue({
             gameCanvas.style.height = '100%';
             // document.body.style.cssText+="-webkit-transform: rotate(-90deg);-moz-transform: rotate(-90deg)";
         },
-        initProfiler() {
-            let profiler = cc.find('PROFILER-NODE');
-            if (profiler) {
-                cc.log(profiler);
-            }
-        },
         initConsoleUtil() {
             if (cc.tree) return;
             cc.tree = function (key) {
@@ -545,7 +539,6 @@ let app = new Vue({
         document.body.insertBefore(document.getElementById('app'), document.body.firstChild);
 
         let onCCInit = () => {
-            this.initProfiler();
             this.initConsoleUtil();
             if (cc.sys.isMobile) {
                 this.fitFullScreen();
@@ -568,7 +561,7 @@ let app = new Vue({
             }, 0);
         }
         let checkCC = () => {
-            if (window.cc) {
+            if (window.cc && window.cc.director) {
                 onCCInit();
                 clearInterval(this.$data.intervalId);
             } else {
