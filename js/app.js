@@ -78,7 +78,7 @@ let app = new Vue({
             sortable: true,
             width: 120,
             align: 'center'
-        },{
+        }, {
             title: 'Action',
             slot: 'cache_action',
             width: 150,
@@ -89,9 +89,9 @@ let app = new Vue({
         cacheDataLoading: false
     },
     methods: {
-        api: function (url, cb) {
+        api: function(url, cb) {
             let xhr = new XMLHttpRequest();
-            xhr.onreadystatechange = function () {
+            xhr.onreadystatechange = function() {
                 if (xhr.readyState == 4 && (xhr.status >= 200 && xhr.status < 400)) {
                     let response = xhr.responseText;
                     cb(JSON.parse(xhr.responseText));
@@ -100,7 +100,7 @@ let app = new Vue({
             xhr.open("GET", url, true);
             xhr.send();
         },
-        compareVersion: function (localVersion, remoteVersion) {
+        compareVersion: function(localVersion, remoteVersion) {
             let vL = localVersion.split('.');
             let vR = remoteVersion.split('.');
             for (let i = 0; i < vL.length; ++i) {
@@ -120,7 +120,7 @@ let app = new Vue({
                 return false;
             }
         },
-        checkVersion: function () {
+        checkVersion: function() {
             this.api('https://raw.githubusercontent.com/potato47/ccc-devtools/master/version.json', (
                 data) => {
                 let remoteVersion = data.version;
@@ -160,11 +160,14 @@ let app = new Vue({
         handleNodeClick(node) {
             if (node) {
                 this.$data.node = node;
-                cc.js.getset(node, 'hex_color', () => {
-                    return '#' + node.color.toHEX('#rrggbb');
-                }, (hex) => {
-                    node.color = new cc.Color().fromHEX(hex);
-                }, false, true);
+                if (!node.hex_color) {
+                    cc.js.getset(node, 'hex_color', () => {
+                        return '#' + node.color.toHEX('#rrggbb');
+                    }, (hex) => {
+                        node.color = new cc.Color().fromHEX(hex);
+                    }, false, true);
+                }
+
                 let superPreLoad = node._onPreDestroy;
                 node._onPreDestroy = () => {
                     superPreLoad.apply(node);
@@ -182,13 +185,15 @@ let app = new Vue({
                         for (let i = 0; i < schema.rows.length; i++) {
                             for (let j = 0; j < schema.rows[i].length; j++) {
                                 if (schema.rows[i][j].type === 'color') {
-                                    cc.js.getset(node[schema.key], schema.rows[i][j].field, () => {
-                                        return '#' + node.getComponent(schema.key)[schema.rows[i][j]
-                                            .rawField].toHEX('#rrggbb');
-                                    }, (hex) => {
-                                        node.getComponent(schema.key)[schema.rows[i][j].rawField] =
-                                            new cc.Color().fromHEX(hex);
-                                    }, false, true);
+                                    if (!node[schema.key][schema.rows[i][j].field]) {
+                                        cc.js.getset(node[schema.key], schema.rows[i][j].field, () => {
+                                            return '#' + node.getComponent(schema.key)[schema.rows[i][j]
+                                                .rawField].toHEX('#rrggbb');
+                                        }, (hex) => {
+                                            node.getComponent(schema.key)[schema.rows[i][j].rawField] =
+                                                new cc.Color().fromHEX(hex);
+                                        }, false, true);
+                                    }
                                 }
                             }
                         }
@@ -301,11 +306,14 @@ let app = new Vue({
         },
         openDevMode() {
             setTimeout(() => {
-                cc.js.getset(cc.Node.prototype, 'isLeaf', function () {
-                    return this.childrenCount === 0;
-                }, function (value) {
+                if (!cc.Node.prototype.isLeaf) {
+                    cc.js.getset(cc.Node.prototype, 'isLeaf', function() {
+                        return this.childrenCount === 0;
+                    }, function(value) {
 
-                }, false, true);
+                    }, false, true);
+                }
+
                 let top = document.getElementById('top')
                 top.appendChild(document.getElementsByClassName('toolbar')[0]);
                 document.getElementById('game_panel').appendChild(document.getElementById('content'));
@@ -409,9 +417,9 @@ let app = new Vue({
         },
         initConsoleUtil() {
             if (cc.tree) return;
-            cc.tree = function (key) {
+            cc.tree = function(key) {
                 let index = key || 0;
-                let treeNode = function (node) {
+                let treeNode = function(node) {
                     let nameStyle =
                         `color: ${node.parent === null || node.activeInHierarchy ? 'green' : 'grey'}; font-size: 14px;font-weight:bold`;
                     let propStyle =
@@ -444,10 +452,10 @@ let app = new Vue({
                 }
                 return '属性依次为x,y,width,height,scale.使用cc.cat(id)查看详细属性.';
             }
-            cc.cat = function (key) {
+            cc.cat = function(key) {
                 let index = 0;
                 let target;
-                let sortId = function (node) {
+                let sortId = function(node) {
                     if (target) return;
                     if (cc.js.isNumber(key)) {
                         if (key === index++) {
@@ -473,9 +481,9 @@ let app = new Vue({
                 target['tempIndex'] = cc.js.isNumber(key) ? key : index;
                 return target;
             }
-            cc.list = function (key) {
+            cc.list = function(key) {
                 let targets = [];
-                let step = function (node) {
+                let step = function(node) {
                     if (node.name.toLowerCase().indexOf(key.toLowerCase()) > -1) {
                         targets.push(node);
                     }
@@ -493,7 +501,7 @@ let app = new Vue({
                     return targets;
                 }
             }
-            cc.where = function (key) {
+            cc.where = function(key) {
                 let target = key.name ? key : cc.cat(key);
                 if (!target) {
                     return null;
@@ -534,7 +542,7 @@ let app = new Vue({
             // console.log(val);
         }
     },
-    created: function () {
+    created: function() {
         this.checkVersion();
         document.body.insertBefore(document.getElementById('app'), document.body.firstChild);
 
