@@ -193,7 +193,7 @@
 	<Modal v-model="isShowCache" width="800" :mask-closable="false" :mask="false" scrollable @on-cancel="closeCachePanel()" :title="cacheTitle" footer-hide="true">
 		<i-table border :columns="cacheColumns" height="600" size="small" :data="cacheData" :loading="cacheDataLoading">
 			<template slot-scope="{ row, index }" slot="cache_preview">
-				<img :src="window.location.href + row.preview" style="max-height: 40px;max-width: 120px;" v-if="row.preview">
+				<img :src="window.location.protocol + '//' + window.location.host + '/' + row.preview" style="max-height: 40px;max-width: 120px;" v-if="row.preview">
 				<div v-if="!row.preview" style="max-height: 40px;">_</div>
 			</template>
 			<template slot-scope="{ row, index }" slot="cache_action">
