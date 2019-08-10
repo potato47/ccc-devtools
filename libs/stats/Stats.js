@@ -34,7 +34,7 @@ var Stats = function () {
 
     function getDrawcalls() {
         if (window.cc) {
-            return cc.renderer.drawCalls;
+            return cc.g_NumberOfDraws || cc.renderer.drawCalls;
         } else {
             return Infinity;
         }
