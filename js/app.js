@@ -308,7 +308,7 @@ let app = new Vue({
             setTimeout(() => {
                 if (!cc.Node.prototype.isLeaf) {
                     cc.js.getset(cc.Node.prototype, 'isLeaf', function () {
-                        return this.childrenCount === 0;
+                        return !this.children || this.childrenCount === 0;
                     }, function (value) {
 
                     }, false, true);
