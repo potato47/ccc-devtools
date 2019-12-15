@@ -177,6 +177,16 @@
 					</el-row>
 					<el-row style="margin:5px 0;">
 						<el-col :span="12" style="text-align:left;padding-top:7px;padding-left:5px;">
+							检查版本
+						</el-col>
+						<el-col :span="12">
+							<el-switch style="margin: 5px;" v-model="isCheckVersion" @change="handleChangeCheckVersion"
+								active-color="#0099ff" inactive-color="gray">
+							</el-switch>
+						</el-col>
+					</el-row>
+					<el-row style="margin:5px 0;">
+						<el-col :span="12" style="text-align:left;padding-top:7px;padding-left:5px;">
 							源码
 						</el-col>
 						<el-col :span="12">

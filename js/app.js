@@ -8,6 +8,7 @@ let app = new Vue({
         isShowCache: false,
         isAutoRefreshTree: true,
         isDarkTheme: false,
+        isCheckVersion: false,
         filterText: '',
         splitLeft: 0.7,
         splitRight: 0.5,
@@ -314,7 +315,7 @@ let app = new Vue({
                     }, false, true);
                 }
 
-                let top = document.getElementById('top')
+                let top = document.getElementById('top');
                 top.appendChild(document.getElementsByClassName('toolbar')[0]);
                 document.getElementById('game_panel').appendChild(document.getElementById('content'));
                 let scene = cc.director.getScene();
@@ -385,6 +386,14 @@ let app = new Vue({
                 localStorage.setItem('isShowProfile', '0');
             }
 
+        },
+        handleChangeCheckVersion(isCheckVersion) {
+            if (isCheckVersion) {
+                localStorage.setItem('isCheckVersion', '1');
+                this.checkVersion();
+            } else {
+                localStorage.setItem('isCheckVersion', '0');
+            }
         },
         handleChangeTheme(isDark) {
             isDark ? this.addDarkTheme() : this.removeDarkTheme();
@@ -543,7 +552,6 @@ let app = new Vue({
         }
     },
     created: function () {
-        this.checkVersion();
         document.body.insertBefore(document.getElementById('app'), document.body.firstChild);
 
         let onCCInit = () => {
@@ -563,7 +571,13 @@ let app = new Vue({
             } else {
                 this.$data.isDarkTheme = false;
             }
-            this.$data.isShorProfile = localStorage.getItem('isShorProfile') === '1';
+            if (localStorage.getItem('isCheckVersion') === '1') {
+                this.$data.isCheckVersion = true;
+                this.checkVersion();
+            } else {
+                this.$data.isCheckVersion = false;
+            }
+            this.$data.isShowProfile = localStorage.getItem('isShowProfile') === '1';
             setTimeout(() => {
                 this.handleChangeStats();
             }, 0);
