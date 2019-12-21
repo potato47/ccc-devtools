@@ -2,7 +2,7 @@
 	background: #444 !important;
 }
 
-.right-pane *,
+.right-panel *,
 .ivu-split-trigger,
 .el-color-dropdown,
 .el-color-dropdown *:not(.el-button--text),
@@ -10,47 +10,48 @@
 .el-popover * ,
 #panelCtl .el-button{
 	border-color: #333 !important;
+	color: #bbb !important;
 }
 
 .el-popover,
 .el-color-dropdown input,
-.right-pane input,
-.right-pane textarea,
-.right-pane .el-checkbox__inner:not(.is-checked) {
+.right-panel input,
+.right-panel textarea,
+.right-panel .el-checkbox__inner:not(.is-checked) {
 	background-color: #333 !important;
 	color: #bbb !important;
 }
 
-.right-pane button,
-.right-pane span[role='button'],
-.right-pane .ant-tree,
-.right-pane .demo-split-pane,
-.right-pane .el-card,
-.right-pane .el-tree,
+.right-panel button,
+.right-panel span[role='button'],
+.right-panel .ant-tree,
+.right-panel .demo-split-pane,
+.right-panel .el-card,
+.right-panel .el-tree,
 .el-color-dropdown,
 .el-popover {
 	background-color: #222 !important;
 }
 
-.right-pane .el-button {
+.right-panel .el-button {
 	padding-left: 10px !important;
 	padding-right: 10px !important;
 }
 
-.right-pane .top-pane span,
-.right-pane .ant-tree,
-.right-pane .demo-split-pane,
-.right-pane .el-card,
-.right-pane .el-tree {
+.right-panel .top-pane span,
+.right-panel .ant-tree,
+.right-panel .demo-split-pane,
+.right-panel .el-card,
+.right-panel .el-tree {
 	color: #aaa !important;
 }
 
-.right-pane .ant-tree-node-selected {
+.right-panel .ant-tree-node-selected {
 	background-color: #456 !important;
 }
 
-.right-pane .ant-tree-node-content-wrapper:hover,
-.right-pane .el-tree-node .el-tree-node__content:hover {
+.right-panel .ant-tree-node-content-wrapper:hover,
+.right-panel .el-tree-node .el-tree-node__content:hover {
 	background-color: #567 !important;
 }
 
@@ -60,13 +61,15 @@
 	background-color: #367 !important;
 }
 
-.right-pane .el-checkbox__label,
-.right-pane .el-button,
+.right-panel .el-checkbox__label,
+.right-panel .el-button,
 .el-color-dropdown, button {
 	color: #59a !important;
 	background-color: #222 !important;
 }
 
+.tree-panel,
+.prop-panel,
 .ivu-modal-content,
 .ivu-table-column-center,
 .ivu-modal-header-inner {

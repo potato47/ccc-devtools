@@ -519,10 +519,10 @@ let app = new Vue({
                 let borderNode = new cc.Node();
                 let bgNode = new cc.Node();
                 let graphics = bgNode.addComponent(cc.Graphics);
-                let canvas = cc.find('Canvas');
-                canvas.addChild(bgNode);
+                let scene = cc.director.getScene();
+                scene.addChild(bgNode);
                 bgNode.addChild(borderNode);
-                bgNode.position = canvas.convertToNodeSpaceAR(rect.center);
+                bgNode.position = scene.convertToNodeSpaceAR(rect.center);
                 let isZeroSize = rect.width === 0 || rect.height === 0;
                 if (isZeroSize) {
                     graphics.circle(0, 0, 100);
