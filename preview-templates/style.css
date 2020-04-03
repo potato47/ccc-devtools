@@ -1,0 +1,99 @@
+body {
+    cursor: default;
+    color: #888;
+    background-color: #333;
+
+    display: -webkit-flex;
+    display: flex;
+
+    -webkit-flex-direction: column;
+    flex-direction: column;
+
+    height: 100%;    /* for firefox */
+    width: 100%;
+
+    position: absolute;
+    padding: 0px;
+    border: 0px;
+    margin: 0px;
+}
+
+body, canvas, div {
+    outline: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    -khtml-user-select: none;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+
+canvas {
+  background-color: rgba(0, 0, 0, 0);
+}
+
+/* #splash {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+
+    background: #171717 url(./splash.png) no-repeat center;
+    background-size: 40%;
+} */
+
+.content {
+    display: -webkit-flex;
+    display: flex;
+
+    -webkit-justify-content: center;
+    justify-content: center;
+
+    -webkit-align-items: center;
+    align-items: center;
+
+    -webkit-flex-direction: column;
+    flex-direction: column;
+
+    -webkit-flex: auto;
+    flex: auto;
+}
+
+.progress-bar {
+    background-color: #1a1a1a;
+    position: absolute;
+    left: 25%;
+    top: 80%;
+    height: 15px;
+    padding: 5px;
+    width: 50%;
+    /*margin: 0 -175px;         */
+    border-radius: 5px;
+    box-shadow: 0 1px 5px #000 inset, 0 1px 0 #444;           
+}
+
+.progress-bar span {
+    display: block;
+    height: 100%;
+    border-radius: 3px;
+    box-shadow: 0 1px 0 rgba(255, 255, 255, .5) inset;
+    transition: width .4s ease-in-out; 
+    background-color: #34c2e3;    
+}
+
+.stripes span {
+    background-size: 30px 30px;
+    background-image: linear-gradient(135deg, rgba(255, 255, 255, .15) 25%, transparent 25%,
+                        transparent 50%, rgba(255, 255, 255, .15) 50%, rgba(255, 255, 255, .15) 75%,
+                        transparent 75%, transparent);            
+    
+    animation: animate-stripes 1s linear infinite;             
+}
+
+#GameDiv {
+    margin:0 auto;
+}
+
+/* #Cocos2dGameContainer {
+    margin:0 auto;
+} */

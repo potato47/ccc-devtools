@@ -1,0 +1,88 @@
+<html>
+
+<head>
+  <link rel="icon" href="app/editor/static/preview-templates/favicon.ico">
+  </link>
+  <meta charset="utf-8">
+  <title><%=title%></title>
+  <link rel="stylesheet" type="text/css" href="style.css" />
+  <!-- <link href="libs/css/googlefonts.css" rel="stylesheet" type="text/css"> -->
+  <link href="libs/css/materialdesignicons.min.css" rel="stylesheet" type="text/css">
+  <link href="libs/css/vuetify.min.css" rel="stylesheet" type="text/css">
+</head>
+
+<body>
+  <v-app id="app">
+    <v-app-bar app clipped-left color="gray" dense>
+      <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
+      <v-toolbar-title class="mr-5 align-center">
+        <span class="title">Title</span>
+      </v-toolbar-title>
+      <v-spacer></v-spacer>
+    </v-app-bar>
+
+    <v-navigation-drawer v-model="drawer" app clipped fixed width="512">
+      <v-container style="height: 50%;overflow: auto;">
+        <v-text-field v-model="search" dense label="Search Node or Component" dark flat solo-inverted hide-details clearable
+          clear-icon="mdi-close-circle-outline"></v-text-field>
+        <v-treeview :items="nodes" item-key="id" dense activatable :search="search" @click="handleNodeClick">
+          <template v-slot:label="{ item, open }">
+            <label v-if="item.active" style="color: white;">{{ item.name }}</label>
+            <label v-else style="color: gray;">{{ item.name }}</label>
+          </template>
+        </v-treeview>
+      </v-container>
+      <v-container style="border-top: 2px solid darkgray;overflow-y: auto;">
+        <v-row>
+          <v-col cols="4">
+            <label>Position</label>
+          </v-col>
+          <v-col cols="8">
+            <label>12,12</label>
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col cols="4">
+            <label>width</label>
+          </v-col>
+          <v-col cols="8">
+            <label>250</label>
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col cols="4">
+            <label>height</label>
+          </v-col>
+          <v-col cols="8">
+            <label>250</label>
+          </v-col>
+        </v-row>
+      </v-container>
+    </v-navigation-drawer>
+
+    <v-content>
+      <v-container fill-height>
+        <v-card id="GameDiv" class="mx-auto" outlined>
+          <canvas id="GameCanvas" oncontextmenu="event.preventDefault()" tabindex="0"></canvas>
+        </v-card>
+      </v-container>
+    </v-content>
+
+  </v-app>
+
+  <!-- <div id="splash">
+      <div class="progress-bar stripes">
+        <span style="width: 0%"></span>
+      </div>
+    </div> -->
+  <script src="libs/js/vue.min.js"></script>
+  <script src="libs/js/vuetify.js"></script>
+  <script src="preview.js"></script>
+  <script src="settings.js" charset="utf-8"></script>
+  <script src="app/editor/static/preview-templates/modular.js" charset="utf-8"></script>
+  <script src="boot.js" charset="utf-8"></script>
+  <script src="/socket.io/socket.io.js" charset="utf-8"></script>
+  <script src="app/engine/bin/<%=cocos2d%>" charset="utf-8"></script>
+</body>
+
+</html>
