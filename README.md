@@ -1,4 +1,4 @@
-# ccc-devtools v2.3.3
+# ccc-devtools v3.0.0
 Cocos Creator 网页调试工具，运行时查看、修改节点树，实时更新节点属性，可视化显示缓存资源。
 
 ## 预览
