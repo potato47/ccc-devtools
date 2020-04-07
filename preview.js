@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 const app = new Vue({
     el: '#app',
     vuetify: new Vuetify({
@@ -14,7 +13,10 @@ const app = new Vue({
         componentsSchema: [],
     },
     created() {
-        this.startUpdateTree();
+        this.waitCCInit().then(() => {
+            this.startUpdateTree();
+            initConsoleUtil();
+        });
     },
     computed: {
         treeFilter() {
@@ -71,6 +73,16 @@ const app = new Vue({
         },
     },
     methods: {
+        waitCCInit() {
+            return new Promise((resolve, reject) => {
+                let id = setInterval(() => {
+                    if (window.cc) {
+                        resolve();
+                        clearInterval(id);
+                    }
+                }, 500);
+            });
+        },
         refreshTree: function () {
             if (!this.$data.drawer || !window.cc || !cc.director.getScene() || !cc.director.getScene().children) return;
             this.$data.treeData = getChildren(cc.director.getScene());
@@ -82,6 +94,30 @@ const app = new Vue({
         },
         stopUpdateTree: function () {
             clearInterval(this.$data.intervalId);
+        },
+        outputNodeHandler(id) {
+            let i = 1;
+            while (window['temp' + i] !== undefined) {
+                i++;
+            }
+            window['temp' + i] = this.selectedNode;
+            console.log('temp' + i);
+            console.log(window['temp' + i]);
+        },
+        outputComponentHandler(component) {
+            let i = 1;
+            while (window['temp' + i] !== undefined) {
+                i++;
+            }
+            window['temp' + i] = this.selectedNode.getComponent(component);
+            console.log('temp' + i);
+            console.log(window['temp' + i]);
+        },
+        drawNodeRect() {
+            cc.where(this.selectedNode);
+        },
+        openGithub() {
+            window.open('https://github.com/potato47/ccc-devtools');
         },
     }
 });

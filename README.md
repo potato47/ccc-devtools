@@ -1,32 +1,17 @@
 # ccc-devtools v3.0.0
-Cocos Creator 网页调试工具，运行时查看、修改节点树，实时更新节点属性，可视化显示缓存资源。
+Cocos Creator 网页调试工具，运行时查看、修改节点树，实时更新节点属性。
 
 ## 预览
 
-v1.0.0
-![preview](./screenshots/preview.gif)
+![preview](./screenshots/preview.png)
 
-v1.1.0: 拖拽节点，增加开关
+## 功能
 
-![t5](./screenshots/t4.gif)
-
-v1.2.0: 控制台输出节点信息
-
-![t6](./screenshots/t5.png)
-
-v2.0.0: 节点信息自动同步，避免手动刷新。增加组件信息显示。增加内存、FPS、渲染时间显示。更新提醒。
-
-![preview2](./screenshots/preview2.png)
-
-v2.1.0: 区分手动刷新和自动刷新两种模式，手动刷新时支持搜索和拖拽节点；添加圈出节点位置功能；添加控制台节点树，cc.tree();
-
-![preview3](./screenshots/preview3.png)
-
-v2.2.0: 新增黑色主题(感谢[@wheatup](https://github.com/wheatup) )
-![dark-theme](./screenshots/dark-theme.png)
-
-v2.3.0: 添加缓存资源查看面板；简化调试信息显示，新增纹理内存挂件。
-![cache](./screenshots/preview_cache.png)
+1.场景节点树实时显示
+2.搜索节点
+3.节点、组件属性实时显示更改
+4.圈出节点位置
+5.输出节点、组件引用到控制台
 
 ## 使用
 
@@ -39,8 +24,6 @@ v2.3.0: 添加缓存资源查看面板；简化调试信息显示，新增纹理
    ![t2](./screenshots/t2.png)
 
 3. 打开`index.jade`,找到`body`里最后一个`div`，在下面添加`include ./ccc-devtools/index.html`，**注意用tab键与上面的div对齐**
-
-   ![t3](./screenshots/t3.png)
 
 
 ## 已知问题

@@ -4,9 +4,6 @@
 <v-app id="app">
     <v-app-bar app clipped-left color="gray" dense v-if="true">
         <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
-        <!-- <v-toolbar-title class="mr-5 align-center">
-            <span class="title"><a>ccc-devtools</a></span>
-        </v-toolbar-title> -->
         <div id="recompiling"><span>Recompiling...</span></div>
         <v-spacer></v-spacer>
         <div class="toolbar">
@@ -48,6 +45,7 @@
             <div class="item">
                 <v-btn id="btn-recompile" small height="25"><span style="color: #aaa;">Recompile</span></v-btn>
             </div>
+            <v-icon @click="openGithub" small>mdi-home</v-icon>
         </div>
     </v-app-bar>
 
@@ -75,8 +73,9 @@
                                     <span style="margin-left: 10px;">{{ nodeSchema.title }}</span>
                                 </div>
                                 <div class="float-right">
-                                    <v-icon style="margin-left: 10px;margin-right: 10px;">mdi-adjust</v-icon>
-                                    <v-icon>mdi-send</v-icon>
+                                    <v-icon style="margin-left: 10px;margin-right: 10px;" @click="drawNodeRect()">
+                                        mdi-adjust</v-icon>
+                                    <v-icon @click="outputNodeHandler()">mdi-send</v-icon>
                                 </div>
                             </th>
                         </tr>
@@ -104,7 +103,7 @@
                                     <span style="margin-left: 10px;">{{ component.title }}</span>
                                 </div>
                                 <div class="float-right">
-                                    <v-icon>mdi-send</v-icon>
+                                    <v-icon @click="outputComponentHandler(component.key)">mdi-send</v-icon>
                                 </div>
                             </th>
                         </tr>
@@ -150,6 +149,7 @@
 <script src="ccc-devtools/libs/js/vue.min.js"></script>
 <script src="ccc-devtools/libs/js/vuetify.js"></script>
 <script src="ccc-devtools/config.js"></script>
+<script src="ccc-devtools/libs/js/cc-console-utils.js"></script>
 <script src="ccc-devtools/preview.js"></script>
 
 <!-- app/editor/static/preview-templates/ -->
