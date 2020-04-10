@@ -119,6 +119,12 @@ const app = new Vue({
         openGithub() {
             window.open('https://github.com/potato47/ccc-devtools');
         },
+        openCocosForum() {
+            window.open('https://forum.cocos.com/');
+        },
+        openCocosDocs() {
+            window.open('https://docs.cocos.com/');
+        }
     }
 });
 

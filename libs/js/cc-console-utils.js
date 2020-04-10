@@ -115,4 +115,55 @@ const initConsoleUtil = function () {
         }, 2000);
         return target;
     }
+    cc.total = function () {
+        let rawCacheData = cc.loader._cache;
+        let cacheData = [];
+        let totalTextureSize = 0;
+        for (let k in rawCacheData) {
+            let item = rawCacheData[k];
+            // console.log(item)
+            if (item.type !== 'js' && item.type !== 'json') {
+                let itemName = '_';
+                let preview = '';
+                let content = item.content.__classname__ ? item.content.__classname__ : item.type;
+                let formatSize = -1;
+                if (item.type === 'png' || item.type === 'jpg') {
+                    let texture = rawCacheData[k.replace('.' + item.type, '.json')];
+                    if (texture && texture._owner && texture._owner._name) {
+                        itemName = texture._owner._name;
+                        preview = texture.content.url;
+                    }
+                } else {
+                    if (item.content.name && item.content.name.length > 0) {
+                        itemName = item.content.name;
+                    } else if (item._owner) {
+                        itemName = item._owner.name || '_';
+                    }
+                    if (content === 'cc.Texture2D') {
+                        let texture = item.content;
+                        preview = texture.url;
+                        let textureSize = texture.width * texture.height * ((texture._native === '.jpg' ? 3 : 4) / 1024 / 1024);
+                        totalTextureSize += textureSize;
+                        // sizeStr = textureSize.toFixed(3) + 'M';
+                        formatSize = Math.round(textureSize * 1000) / 1000;
+                    } else if (content === 'cc.SpriteFrame') {
+                        preview = item.content._texture.url;
+                    }
+                }
+                cacheData.push({
+                    // queueId: item.queueId,
+                    type: item.type,
+                    name: itemName,
+                    // preview: preview,
+                    id: item.id,
+                    content: content,
+                    size: formatSize
+                });
+            }
+        }
+        // let cacheTitle = `缓存 [文件总数:${cacheData.length}][纹理缓存:${totalTextureSize.toFixed(2) + 'M'}]`;
+        // console.log(cacheTitle);
+        // console.table(cacheData);
+        return totalTextureSize.toFixed(2) + 'M';
+    }
 }
