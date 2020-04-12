@@ -5,6 +5,20 @@ const app = new Vue({
     }),
     data: {
         drawer: false,
+        cacheDialog: false,
+        cacheTitle: '',
+        cacheHeaders: [
+            { text: 'Type', value: 'type' },
+            { text: 'Name', value: 'name' },
+            { text: 'Preivew', value: 'preview' },
+            { text: 'ID', value: 'id' },
+            { text: 'Content', value: 'content' },
+            { text: 'Size', value: 'size' },
+        ],
+        cacheRawData: [],
+        cacheData: [],
+        cacheSearchText: null,
+        cacheOnlyTexture: true,
         treeData: [],
         selectedNodes: [],
         intervalId: -1,
@@ -17,6 +31,11 @@ const app = new Vue({
             this.startUpdateTree();
             initConsoleUtil();
         });
+    },
+    watch: {
+        cacheOnlyTexture() {
+            this.updateCacheData();
+        }
     },
     computed: {
         treeFilter() {
@@ -115,6 +134,18 @@ const app = new Vue({
         },
         drawNodeRect() {
             cc.where(this.selectedNode);
+        },
+        updateCacheData() {
+            if (this.$data.cacheOnlyTexture) {
+                this.$data.cacheData = this.$data.cacheRawData.filter(item => item.content === 'cc.Texture2D');
+            } else {
+                this.$data.cacheData = this.$data.cacheRawData;
+            }
+        },
+        openCacheDialog() {
+            [this.$data.cacheRawData, this.$data.cacheTitle] = cc.cache();
+            this.updateCacheData();
+            this.$data.cacheDialog = true;
         },
         openGithub() {
             window.open('https://github.com/potato47/ccc-devtools');

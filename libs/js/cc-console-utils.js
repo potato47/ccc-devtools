@@ -115,13 +115,12 @@ const initConsoleUtil = function () {
         }, 2000);
         return target;
     }
-    cc.total = function () {
+    cc.cache = function () {
         let rawCacheData = cc.loader._cache;
         let cacheData = [];
         let totalTextureSize = 0;
         for (let k in rawCacheData) {
             let item = rawCacheData[k];
-            // console.log(item)
             if (item.type !== 'js' && item.type !== 'json') {
                 let itemName = '_';
                 let preview = '';
@@ -151,19 +150,17 @@ const initConsoleUtil = function () {
                     }
                 }
                 cacheData.push({
-                    // queueId: item.queueId,
+                    queueId: item.queueId,
                     type: item.type,
                     name: itemName,
-                    // preview: preview,
+                    preview: preview,
                     id: item.id,
                     content: content,
                     size: formatSize
                 });
             }
         }
-        // let cacheTitle = `缓存 [文件总数:${cacheData.length}][纹理缓存:${totalTextureSize.toFixed(2) + 'M'}]`;
-        // console.log(cacheTitle);
-        // console.table(cacheData);
-        return totalTextureSize.toFixed(2) + 'M';
+        let cacheTitle = `缓存 [文件总数:${cacheData.length}][纹理缓存:${totalTextureSize.toFixed(2) + 'M'}]`;
+        return [cacheData, cacheTitle];
     }
 }

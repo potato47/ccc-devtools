@@ -47,6 +47,7 @@
             </div>
             <v-icon @click="openCocosDocs" small>mdi-cloud-search</v-icon>
             <v-icon @click="openCocosForum" small>mdi-forum</v-icon>
+            <v-icon @click="openCacheDialog" small>mdi-table</v-icon>
             <v-icon @click="openGithub" small>mdi-home</v-icon>
         </div>
     </v-app-bar>
@@ -146,6 +147,40 @@
         </v-container>
     </v-content>
 
+    <v-dialog v-model="cacheDialog" persistent scrollable>
+        <v-card>
+            <v-card-title>
+                {{ cacheTitle }}
+                <v-spacer></v-spacer>
+                <v-text-field v-model="cacheSearchText" append-icon="mdi-magnify" label="Search" single-line
+                    hide-details>
+                </v-text-field>
+            </v-card-title>
+            <v-divider></v-divider>
+            <v-card-text>
+                <v-data-table :headers="cacheHeaders" :items="cacheData" :search="cacheSearchText" :sort-by="['size']"
+                    :sort-desc="[true]">
+                    <template v-slot:item.size="{ item }">
+                        {{ item.size == -1 ? '_' : (item.size +'MB') }}
+                    </template>
+                    <template v-slot:item.preview="{ item }">
+                        <div style="height: 60px;display: flex;align-items: center;">
+                            <img :src="window.location.protocol + '//' + window.location.host + '/' + item.preview"
+                                style="max-height: 60px;max-width: 120px;" v-if="item.preview">
+                            <template v-else>_</template>
+                        </div>
+                    </template>
+                </v-data-table>
+            </v-card-text>
+            <v-divider></v-divider>
+            <v-card-actions>
+                <v-btn color="blue darken-1" text @click="cacheDialog = false">Close</v-btn>
+                <v-spacer></v-spacer>
+                <v-switch v-model="cacheOnlyTexture" label="只显示纹理"></v-switch>
+            </v-card-actions>
+        </v-card>
+    </v-dialog>
+
 </v-app>
 
 <script src="ccc-devtools/libs/js/vue.min.js"></script>
@@ -153,5 +188,3 @@
 <script src="ccc-devtools/config.js"></script>
 <script src="ccc-devtools/libs/js/cc-console-utils.js"></script>
 <script src="ccc-devtools/preview.js"></script>
-
-<!-- app/editor/static/preview-templates/ -->
