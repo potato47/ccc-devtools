@@ -33,6 +33,7 @@ const NEX_CONFIG = {
 				{ name: 'Zoom Ratio', key: 'zoomRatio', type: 'number' },
 				{ name: 'Depth', key: 'depth', type: 'number' },
 				{ name: 'Bacground Color', key: 'hex_backgroundColor', rawKey: 'backgroundColor', type: 'color' },
+				{ name: 'Align with Screen', key: 'alignWithScreen', type: 'bool' },
 			]
 		},
 		'cc.Sprite': {
