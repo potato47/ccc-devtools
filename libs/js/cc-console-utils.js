@@ -95,6 +95,8 @@ const initConsoleUtil = function () {
         let scene = cc.director.getScene();
         scene.addChild(bgNode);
         bgNode.position = rect.center;
+        bgNode.group = target.group;
+        bgNode.zIndex = cc.macro.MAX_ZINDEX;
         let isZeroSize = rect.width === 0 || rect.height === 0;
         if (isZeroSize) {
             graphics.circle(0, 0, 100);
@@ -104,9 +106,8 @@ const initConsoleUtil = function () {
             bgNode.width = rect.width;
             bgNode.height = rect.height;
             graphics.rect(-bgNode.width / 2, -bgNode.height / 2, bgNode.width, bgNode.height);
-            graphics.strokeColor = cc.Color.RED;
-            graphics.lineWidth = 10;
-            graphics.stroke()
+            graphics.fillColor = new cc.Color().fromHEX('#E91E6390');
+            graphics.fill();
         }
         setTimeout(() => {
             if (cc.isValid(bgNode)) {
@@ -124,7 +125,7 @@ const initConsoleUtil = function () {
             if (item.type !== 'js' && item.type !== 'json') {
                 let itemName = '_';
                 let preview = '';
-                let content = item.content.__classname__ ? item.content.__classname__ : item.type;
+                let content = (item.content && item.content.__classname__) ? item.content.__classname__ : item.type;
                 let formatSize = -1;
                 if (item.type === 'png' || item.type === 'jpg') {
                     let texture = rawCacheData[k.replace('.' + item.type, '.json')];
@@ -136,7 +137,7 @@ const initConsoleUtil = function () {
                     if (item.content.name && item.content.name.length > 0) {
                         itemName = item.content.name;
                     } else if (item._owner) {
-                        itemName = item._owner.name || '_';
+                        itemName = (item._owner && item._owner.name) || '_';
                     }
                     if (content === 'cc.Texture2D') {
                         let texture = item.content;

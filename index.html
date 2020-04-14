@@ -1,5 +1,5 @@
-<link href="ccc-devtools/libs/css/materialdesignicons.min.css" rel="stylesheet" type="text/css">
-<link href="ccc-devtools/libs/css/vuetify.min.css" rel="stylesheet" type="text/css">
+<link href="app/editor/static/preview-templates/ccc-devtools/libs/css/materialdesignicons.min.css" rel="stylesheet" type="text/css">
+<link href="app/editor/static/preview-templates/ccc-devtools/libs/css/vuetify.min.css" rel="stylesheet" type="text/css">
 <style>
     html {
         overflow-y: auto;
@@ -94,7 +94,8 @@
                             <td style="width: 60%;">
                                 <v-color-picker v-if="row.type == 'color'" class="ma-2" canvas-height="80" width="259"
                                     hide-inputs v-model="selectedNode[row.key]"></v-color-picker>
-                                <v-simple-checkbox v-else-if="row.type == 'bool'" v-model="selectedNode[row.key]" style="padding: 10px;width: 100%;"></v-simple-checkbox>
+                                <v-simple-checkbox v-else-if="row.type == 'bool'" v-model="selectedNode[row.key]"
+                                    style="padding: 10px;width: 100%;"></v-simple-checkbox>
                                 <input v-else :type="row.type" v-model="selectedNode[row.key]"
                                     style="padding: 10px;width: 100%;"></input>
                             </td>
@@ -126,7 +127,9 @@
                                 <textarea v-else-if="row.type == 'textarea'" rows="1"
                                     v-model="selectedNode[component.key][row.key]" style="padding: 10px;width: 100%;">
                                 </textarea>
-                                <v-simple-checkbox v-else-if="row.type == 'bool'" v-model="selectedNode[component.key][row.key]" style="padding: 10px;width: 100%;"></v-simple-checkbox>
+                                <v-simple-checkbox v-else-if="row.type == 'bool'"
+                                    v-model="selectedNode[component.key][row.key]" style="padding: 10px;width: 100%;">
+                                </v-simple-checkbox>
                                 <input v-else :type="row.type" v-model="selectedNode[component.key][row.key]"
                                     style="padding: 10px;width: 100%;"></input>
                             </td>
@@ -166,7 +169,11 @@
             <v-divider></v-divider>
             <v-card-text>
                 <v-data-table :headers="cacheHeaders" :items="cacheData" :search="cacheSearchText" :sort-by="['size']"
-                    :sort-desc="[true]">
+                    :sort-desc="[true]" :footer-props="{
+                        showFirstLastPage: true,
+                        firstIcon: 'mdi-chevron-double-left',
+                        lastIcon: 'mdi-chevron-double-right',
+                      }">
                     <template v-slot:item.size="{ item }">
                         {{ item.size == -1 ? '_' : (item.size +'MB') }}
                     </template>
@@ -190,8 +197,8 @@
 
 </v-app>
 
-<script src="ccc-devtools/libs/js/vue.min.js"></script>
-<script src="ccc-devtools/libs/js/vuetify.js"></script>
-<script src="ccc-devtools/config.js"></script>
-<script src="ccc-devtools/libs/js/cc-console-utils.js"></script>
-<script src="ccc-devtools/preview.js"></script>
+<script src="app/editor/static/preview-templates/ccc-devtools/libs/js/vue.min.js"></script>
+<script src="app/editor/static/preview-templates/ccc-devtools/libs/js/vuetify.js"></script>
+<script src="app/editor/static/preview-templates/ccc-devtools/config.js"></script>
+<script src="app/editor/static/preview-templates/ccc-devtools/libs/js/cc-console-utils.js"></script>
+<script src="app/editor/static/preview-templates/ccc-devtools/preview.js"></script>
