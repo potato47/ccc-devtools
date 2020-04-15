@@ -1,4 +1,5 @@
-<link href="app/editor/static/preview-templates/ccc-devtools/libs/css/materialdesignicons.min.css" rel="stylesheet" type="text/css">
+<link href="app/editor/static/preview-templates/ccc-devtools/libs/css/materialdesignicons.min.css" rel="stylesheet"
+    type="text/css">
 <link href="app/editor/static/preview-templates/ccc-devtools/libs/css/vuetify.min.css" rel="stylesheet" type="text/css">
 <style>
     html {
@@ -93,7 +94,7 @@
                             <td style="padding: 10px;width: 40%;">{{ row.name }}</td>
                             <td style="width: 60%;">
                                 <v-color-picker v-if="row.type == 'color'" class="ma-2" canvas-height="80" width="259"
-                                    hide-inputs v-model="selectedNode[row.key]"></v-color-picker>
+                                    v-model="selectedNode[row.key]"></v-color-picker>
                                 <v-simple-checkbox v-else-if="row.type == 'bool'" v-model="selectedNode[row.key]"
                                     style="padding: 10px;width: 100%;"></v-simple-checkbox>
                                 <input v-else :type="row.type" v-model="selectedNode[row.key]"
@@ -123,7 +124,7 @@
                             <td style="padding: 10px;width: 40%;">{{ row.name }}</td>
                             <td style="width: 60%;">
                                 <v-color-picker v-if="row.type == 'color'" class="ma-2" canvas-height="80" width="259"
-                                    hide-inputs v-model="selectedNode[component.key][row.key]"></v-color-picker>
+                                    v-model="selectedNode[component.key][row.key]"></v-color-picker>
                                 <textarea v-else-if="row.type == 'textarea'" rows="1"
                                     v-model="selectedNode[component.key][row.key]" style="padding: 10px;width: 100%;">
                                 </textarea>
