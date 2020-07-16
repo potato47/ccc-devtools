@@ -4,6 +4,7 @@ const app = new Vue({
         theme: { dark: true }
     }),
     data: {
+        isShowTop: true,
         drawer: false,
         cacheDialog: false,
         cacheTitle: '',
@@ -27,8 +28,13 @@ const app = new Vue({
         componentsSchema: [],
     },
     created() {
+        if (window.innerHeight === window.outerHeight) { // 手机端，chrome device模式
+            this.isShowTop = false;
+        }
         this.waitCCInit().then(() => {
-            this.startUpdateTree();
+            if (this.isShowTop) {
+                this.startUpdateTree();
+            }
             initConsoleUtil();
         });
     },

@@ -8,7 +8,7 @@
 </style>
 
 <v-app id="app">
-    <v-app-bar app clipped-left color="gray" dense v-if="true">
+    <v-app-bar app clipped-left color="gray" dense v-if="isShowTop">
         <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
         <div id="recompiling"><span>Recompiling...</span></div>
         <v-spacer></v-spacer>
@@ -57,8 +57,52 @@
             <v-icon @click="openGithub" small>mdi-home</v-icon>
         </div>
     </v-app-bar>
+    
+    <div v-if="!isShowTop">
+        <div id="recompiling"><span>Recompiling...</span></div>
+        <div class="toolbar">
+            <div class="item">
+                <select id="opts-device">
+                    <option value="0">Default</option>
+                </select>
+            </div>
+            <div class="item">
+                <v-btn id="btn-rotate" small height="25"><span style="color: #aaa;">Rotate</span></v-btn>
+            </div>
+            <span style="font-size: small;display: none;" class="item">Debug Mode:</span>
+            <div class="item" style="display: none;">
+                <select id="opts-debug-mode">
+                    <option value="0">None</option>
+                    <option value="1">Info</option>
+                    <option value="2">Warn</option>
+                    <option value="3">Error</option>
+                    <option value="4">Info For Web Page</option>
+                    <option value="5">Warn For Web Page</option>
+                    <option value="6">Error For Web Page</option>
+                </select>
+            </div>
+            <div class="item">
+                <v-btn id="btn-show-fps" small height="25"><span style="color: #aaa;">Show FPS</span></v-btn>
+            </div>
+            <div class="item">
+                <span style="font-size: small;color: #aaa;" class="item">FPS:</span><input id="input-set-fps"
+                    type="number" />
+            </div>
+            <div style="margin-right: 0px;" class="item">
+                <v-btn id="btn-pause" small height="25"><span style="color: #aaa;">Pause</span></v-btn>
+            </div>
+            <div class="item">
+                <v-btn id="btn-step" style="display: none;" small height="25">
+                    <span style="color: #aaa;">Step</span>
+                </v-btn>
+            </div>
+            <div class="item">
+                <v-btn id="btn-recompile" small height="25"><span style="color: #aaa;">Recompile</span></v-btn>
+            </div>
+        </div>
+    </div>
 
-    <v-navigation-drawer v-model="drawer" app clipped fixed width="512">
+    <v-navigation-drawer v-model="drawer" app clipped fixed width="512" v-if="isShowTop">
         <v-container style="height: 50%;overflow: auto;">
             <v-text-field v-model="treeSearchText" dense label="Search Node or Component" dark flat solo-inverted
                 hide-details clearable clear-icon="mdi-close-circle-outline"></v-text-field>
