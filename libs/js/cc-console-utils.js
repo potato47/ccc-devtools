@@ -117,11 +117,12 @@ const initConsoleUtil = function () {
         return target;
     }
     cc.cache = function () {
-        let rawCacheData = cc.loader._cache;
+        let rawCacheData = cc.assetManager.assets._map;
         let cacheData = [];
         let totalTextureSize = 0;
         for (let k in rawCacheData) {
             let item = rawCacheData[k];
+            if(!item.content) item.content=item; 
             if (item.type !== 'js' && item.type !== 'json') {
                 let itemName = '_';
                 let preview = '';
@@ -131,7 +132,7 @@ const initConsoleUtil = function () {
                     let texture = rawCacheData[k.replace('.' + item.type, '.json')];
                     if (texture && texture._owner && texture._owner._name) {
                         itemName = texture._owner._name;
-                        preview = texture.content.url;
+                        preview = texture.content.nativeUrl;
                     }
                 } else {
                     if (item.content.name && item.content.name.length > 0) {
@@ -141,13 +142,13 @@ const initConsoleUtil = function () {
                     }
                     if (content === 'cc.Texture2D') {
                         let texture = item.content;
-                        preview = texture.url;
+                        preview = texture.nativeUrl;
                         let textureSize = texture.width * texture.height * ((texture._native === '.jpg' ? 3 : 4) / 1024 / 1024);
                         totalTextureSize += textureSize;
                         // sizeStr = textureSize.toFixed(3) + 'M';
                         formatSize = Math.round(textureSize * 1000) / 1000;
                     } else if (content === 'cc.SpriteFrame') {
-                        preview = item.content._texture.url;
+                        preview = item.content._texture.nativeUrl;
                     }
                 }
                 cacheData.push({
