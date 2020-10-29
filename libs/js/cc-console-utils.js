@@ -11,12 +11,12 @@ const initConsoleUtil = function () {
                 `color: orange; background: black;margin-left: 5px;border-radius:3px;padding:0 3px;fonrt-size: 10px;font-weight:bold;`
             let nameValue = `%c${node.name}`;
             let propValue =
-                `%c${node.x.toFixed(0) + ',' + node.y.toFixed(0) + ',' + node.width.toFixed(0) + ',' + node.height.toFixed(0) + ',' + node.scale.toFixed(1)}`
+                `%c${node.position.x.toFixed(0) + ',' + node.position.y.toFixed(0)}`
             let indexValue = `%c${index++}`;
-            if (node.childrenCount > 0) {
+            if (node.children.length > 0) {
                 console.groupCollapsed(nameValue + propValue + indexValue, nameStyle,
                     propStyle, indexStyle);
-                for (let i = 0; i < node.childrenCount; i++) {
+                for (let i = 0; i < node.children.length; i++) {
                     treeNode(node.children[i]);
                 }
                 console.groupEnd();
@@ -53,8 +53,8 @@ const initConsoleUtil = function () {
                     index++;
                 }
             }
-            if (node.childrenCount > 0) {
-                for (let i = 0; i < node.childrenCount; i++) {
+            if (node.children.length > 0) {
+                for (let i = 0; i < node.children.length; i++) {
                     sortId(node.children[i]);
                 }
             }
@@ -70,8 +70,8 @@ const initConsoleUtil = function () {
             if (node.name.toLowerCase().indexOf(key.toLowerCase()) > -1) {
                 targets.push(node);
             }
-            if (node.childrenCount > 0) {
-                for (let i = 0; i < node.childrenCount; i++) {
+            if (node.children.length > 0) {
+                for (let i = 0; i < node.children.length; i++) {
                     step(node.children[i]);
                 }
             }
@@ -89,35 +89,49 @@ const initConsoleUtil = function () {
         if (!target) {
             return null;
         }
-        let rect = target.getBoundingBoxToWorld();
-        let bgNode = new cc.Node();
-        let graphics = bgNode.addComponent(cc.Graphics);
+        let rect;
+        let transform = target.getComponent(cc.UITransformComponent);
+        if (transform) {
+            rect = getSelfBoundingBoxToWold(transform);
+        } else {
+            let worldPos = cc.v3();
+            target.getWorldPosition(worldPos);
+            rect = cc.rect(worldPos.x, worldPos.y, 0, 0);
+        }
+        let canvasNode = new cc.Node('Canvas');
         let scene = cc.director.getScene();
-        scene.addChild(bgNode);
-        bgNode.position = rect.center;
-        bgNode.group = target.group;
-        bgNode.zIndex = cc.macro.MAX_ZINDEX;
+        scene.addChild(canvasNode);
+        canvasNode.addComponent(cc.Canvas);
+        let bgNode = new cc.Node();
+        let graphics = bgNode.addComponent(cc.GraphicsComponent);
+        let bgTransform = bgNode.addComponent(cc.UITransformComponent);
+        canvasNode.addChild(bgNode);
+        let centerPos = cc.v3(rect.center.x, rect.center.y, 0);
+        let localPos = cc.v3();
+        canvasNode.getComponent(cc.UITransformComponent).convertToNodeSpaceAR(centerPos, localPos);
+        bgNode.setPosition(localPos);
+        bgNode.layer = target.layer;
         let isZeroSize = rect.width === 0 || rect.height === 0;
         if (isZeroSize) {
             graphics.circle(0, 0, 100);
             graphics.fillColor = cc.Color.GREEN;
             graphics.fill();
         } else {
-            bgNode.width = rect.width;
-            bgNode.height = rect.height;
-            graphics.rect(-bgNode.width / 2, -bgNode.height / 2, bgNode.width, bgNode.height);
+            bgTransform.width = rect.width;
+            bgTransform.height = rect.height;
+            graphics.rect(-bgTransform.width / 2, -bgTransform.height / 2, bgTransform.width, bgTransform.height);
             graphics.fillColor = new cc.Color().fromHEX('#E91E6390');
             graphics.fill();
         }
         setTimeout(() => {
-            if (cc.isValid(bgNode)) {
-                bgNode.destroy();
+            if (cc.isValid(canvasNode)) {
+                canvasNode.destroy();
             }
         }, 2000);
         return target;
     }
     cc.cache = function () {
-        let rawCacheData = cc.loader._cache;
+        let rawCacheData = cc.loader._pipes[0].pipeline._cache;
         let cacheData = [];
         let totalTextureSize = 0;
         for (let k in rawCacheData) {
@@ -129,7 +143,7 @@ const initConsoleUtil = function () {
                 let formatSize = -1;
                 if (item.type === 'png' || item.type === 'jpg') {
                     let texture = rawCacheData[k.replace('.' + item.type, '.json')];
-                    if (texture && texture._owner && texture._owner._name) {
+                    if (texture && texture._owner) {
                         itemName = texture._owner._name;
                         preview = texture.content.url;
                     }
@@ -141,13 +155,13 @@ const initConsoleUtil = function () {
                     }
                     if (content === 'cc.Texture2D') {
                         let texture = item.content;
-                        preview = texture.url;
+                        preview = texture._mipmaps[0].url;
                         let textureSize = texture.width * texture.height * ((texture._native === '.jpg' ? 3 : 4) / 1024 / 1024);
                         totalTextureSize += textureSize;
                         // sizeStr = textureSize.toFixed(3) + 'M';
                         formatSize = Math.round(textureSize * 1000) / 1000;
                     } else if (content === 'cc.SpriteFrame') {
-                        preview = item.content._texture.url;
+                        preview = item.content._texture._mipmaps[0].url;
                     }
                 }
                 cacheData.push({
@@ -163,5 +177,23 @@ const initConsoleUtil = function () {
         }
         let cacheTitle = `缓存 [文件总数:${cacheData.length}][纹理缓存:${totalTextureSize.toFixed(2) + 'M'}]`;
         return [cacheData, cacheTitle];
+    }
+}
+
+function getSelfBoundingBoxToWold(transform) {
+    let _worldMatrix = cc.mat4();
+    if (transform.node.parent) {
+        transform.node.parent.getWorldMatrix(_worldMatrix);
+        let parentMat = _worldMatrix;
+        let _matrix = cc.mat4();
+        cc.Mat4.fromRTS(_matrix, transform.node.getRotation(), transform.node.getPosition(), transform.node.getScale());
+        const width = transform._contentSize.width;
+        const height = transform._contentSize.height;
+        const rect = cc.rect(-transform._anchorPoint.x * width, -transform._anchorPoint.y * height, width, height);
+        cc.Mat4.multiply(_worldMatrix, parentMat, _matrix);
+        rect.transformMat4(_worldMatrix);
+        return rect;
+    } else {
+        return transform.getBoundingBox();
     }
 }

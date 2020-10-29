@@ -51,14 +51,6 @@ const app = new Vue({
             if (!this.selectedNodes.length) return undefined
             let node = getNodeById(this.selectedNodes[0]);
             if (node) {
-                if (!node.hex_color) {
-                    cc.js.getset(node, 'hex_color', () => {
-                        return '#' + node.color.toHEX('#rrggbb');
-                    }, (hex) => {
-                        node.color = new cc.Color().fromHEX(hex);
-                    }, false, true);
-                }
-
                 let superPreLoad = node._onPreDestroy;
                 node._onPreDestroy = () => {
                     superPreLoad.apply(node);
@@ -66,7 +58,7 @@ const app = new Vue({
                         this.selectedNodes.pop();
                     }
                 }
-                this.nodeSchema = NEX_CONFIG.nodeSchema.node2d;
+                this.nodeSchema = NEX_CONFIG.nodeSchema.node;
                 let componentsSchema = [];
                 for (let component of node._components) {
                     let schema = NEX_CONFIG.componentsSchema[component.__classname__];
@@ -109,8 +101,16 @@ const app = new Vue({
             });
         },
         refreshTree: function () {
-            if (!this.$data.drawer || !window.cc || !cc.director.getScene() || !cc.director.getScene().children) return;
-            this.$data.treeData = getChildren(cc.director.getScene());
+            if (!this.$data.drawer || !window.cc) {
+                return;
+            }
+            let currentScene = cc.director.getScene();
+            if (!currentScene || !currentScene.children) {
+                return;
+            }
+            // 包含场景根节点
+            // this.$data.treeData = [{ id: currentScene._id, name: 'Scene', active: currentScene.activeInHierarchy, open: true, children: getChildren(currentScene) }];
+            this.$data.treeData = getChildren(currentScene);
         },
         startUpdateTree: function () {
             this.$data.intervalId = setInterval(() => {
@@ -119,6 +119,16 @@ const app = new Vue({
         },
         stopUpdateTree: function () {
             clearInterval(this.$data.intervalId);
+        },
+        onSubPropInput: function (target, row) {
+            let value = target[row.parentKey][row.key];
+            if (typeof value === 'number' && !isNaN(value)) {
+                if (row.method === 'setRotationFromEuler') {
+                    target.setRotationFromEuler(target.eulerAngles.x, target.eulerAngles.y, target.eulerAngles.z);
+                } else {
+                    target[row.method](target[row.parentKey]);
+                }
+            }
         },
         outputNodeHandler(id) {
             let i = 1;
@@ -179,8 +189,8 @@ function getNodeById(id) {
             target = node;
             return;
         }
-        if (node.childrenCount) {
-            for (let i = 0; i < node.childrenCount; i++) {
+        if (node.children.length) {
+            for (let i = 0; i < node.children.length; i++) {
                 if (!target) {
                     search(node.children[i]);
                 }

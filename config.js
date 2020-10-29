@@ -1,27 +1,19 @@
 const NEX_CONFIG = {
 	nodeSchema: {
-		node2d: {
+		node: {
 			title: 'Node',
 			key: 'cc.Node',
 			rows: [
 				{ name: 'Name', key: 'name', type: 'text' },
-				{ name: 'X', key: 'x', type: 'number' },
-				{ name: 'Y', key: 'y', type: 'number' },
-				{ name: 'Width', key: 'width', type: 'number' },
-				{ name: 'Height', key: 'height', type: 'number' },
-				{ name: 'Angle', key: 'angle', type: 'number' },
-				{ name: 'ScaleX', key: 'scaleX', type: 'number' },
-				{ name: 'ScaleY', key: 'scaleY', type: 'number' },
-				{ name: 'Opacity', key: 'opacity', type: 'number' },
-				{ name: 'Color', key: 'hex_color', type: 'color' },
-				{ name: 'Group', key: 'group', type: 'text' },
-			]
-		},
-		node3d: {
-			title: 'Node',
-			key: 'cc.Node',
-			rows: [
-				// TODO:
+				{ name: 'Position.X', parentKey: 'position', key: 'x', type: 'object_number', method: 'setPosition' },
+				{ name: 'Position.Y', parentKey: 'position', key: 'y', type: 'object_number', method: 'setPosition' },
+				{ name: 'Position.Z', parentKey: 'position', key: 'z', type: 'object_number', method: 'setPosition' },
+				{ name: 'Angle.X', parentKey: 'eulerAngles', key: 'x', type: 'object_number', method: 'setRotationFromEuler' },
+				{ name: 'Angle.Y', parentKey: 'eulerAngles', key: 'y', type: 'object_number', method: 'setRotationFromEuler' },
+				{ name: 'Angle.Z', parentKey: 'eulerAngles', key: 'z', type: 'object_number', method: 'setRotationFromEuler' },
+				{ name: 'Scale.X', parentKey: 'scale', key: 'x', type: 'object_number', method: 'setScale' },
+				{ name: 'Scale.Y', parentKey: 'scale', key: 'y', type: 'object_number', method: 'setScale' },
+				{ name: 'Scale.Z', parentKey: 'scale', key: 'z', type: 'object_number', method: 'setScale' },
 			]
 		},
 	},
@@ -30,16 +22,37 @@ const NEX_CONFIG = {
 			title: 'cc.Camera',
 			key: 'cc.Camera',
 			rows: [
-				{ name: 'Zoom Ratio', key: 'zoomRatio', type: 'number' },
-				{ name: 'Depth', key: 'depth', type: 'number' },
-				{ name: 'Bacground Color', key: 'hex_backgroundColor', rawKey: 'backgroundColor', type: 'color' },
-				{ name: 'Align with Screen', key: 'alignWithScreen', type: 'bool' },
+				{ name: 'ClearDepth', key: 'clearDepth', type: 'number' },
+				{ name: 'ClearColor', key: 'hex_clearColor', rawKey: 'clearColor', type: 'color' },
+			]
+		},
+		'cc.DirectionalLight': {
+			title: 'cc.DirectionalLight',
+			key: 'cc.DirectionalLight',
+			rows: [
+				{ name: 'UseColorTemperature', key: 'useColorTemperature', type: 'bool' },
+				{ name: 'ColorTemperature', key: 'colorTemperature', type: 'number' },
+				{ name: 'Illuminance', key: 'illuminance', type: 'number' },
+				{ name: 'Color', key: 'hex_color', rawKey: 'color', type: 'color' },
+			]
+		},
+		'cc.UITransform': {
+			key: 'cc.UITransform',
+			title: 'cc.UITransform',
+			rows: [
+				{ name: 'Width', key: 'width', type: 'number' },
+				{ name: 'Height', key: 'height', type: 'number' },
+				{ name: 'AnchorX', key: 'anchorX', type: 'number' },
+				{ name: 'AnchorY', key: 'anchorY', type: 'number' },
+				{ name: 'Priority', key: 'priority', type: 'number' },
 			]
 		},
 		'cc.Sprite': {
 			key: 'cc.Sprite',
 			title: 'cc.Sprite',
-			rows: []
+			rows: [
+				{ name: 'Color', key: 'hex_color', rawKey: 'color', type: 'color' },
+			]
 		},
 		'cc.Label': {
 			title: 'cc.Label',
@@ -48,6 +61,7 @@ const NEX_CONFIG = {
 				{ name: 'String', key: 'string', type: 'textarea' },
 				{ name: 'Font Size', key: 'fontSize', type: 'number' },
 				{ name: 'Line Height', key: 'lineHeight', type: 'number' },
+				{ name: 'Color', key: 'hex_color', rawKey: 'color', type: 'color' },
 			]
 		}
 	}

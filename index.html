@@ -1,6 +1,6 @@
-<link href="app/editor/static/preview-templates/ccc-devtools/libs/css/materialdesignicons.min.css" rel="stylesheet"
+<link href="./ccc-devtools/libs/css/materialdesignicons.min.css" rel="stylesheet"
     type="text/css">
-<link href="app/editor/static/preview-templates/ccc-devtools/libs/css/vuetify.min.css" rel="stylesheet" type="text/css">
+<link href="./ccc-devtools/libs/css/vuetify.min.css" rel="stylesheet" type="text/css">
 <style>
     html {
         overflow-y: auto;
@@ -12,18 +12,18 @@
         <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
         <div id="recompiling"><span>Recompiling...</span></div>
         <v-spacer></v-spacer>
-        <div class="toolbar">
+        <div class="toolbar disabled">
             <div class="item">
-                <select id="opts-device">
-                    <option value="0">Default</option>
+                <select id="opts-device" value="<%=config.device%>">
+                    <% Object.keys(devices).forEach((key) => {%>
+                    <option value="<%=key%>"><%=devices[key].name%>(<%=devices[key].width%> X <%=devices[key].height%>)</option>
+                    <% }) %>
                 </select>
             </div>
+            <div class="item"><button id="btn-rotate" class="<%=config.rotate ? 'checked' : ''%>">Rotate</button></div>
+            <span style="font-size: small;" class="item">Debug Mode:</span>
             <div class="item">
-                <v-btn id="btn-rotate" small height="25"><span style="color: #aaa;">Rotate</span></v-btn>
-            </div>
-            <span style="font-size: small;display: none;" class="item">Debug Mode:</span>
-            <div class="item" style="display: none;">
-                <select id="opts-debug-mode">
+                <select id="opts-debug-mode" value="<%=config.debugMode%>">
                     <option value="0">None</option>
                     <option value="1">Info</option>
                     <option value="2">Warn</option>
@@ -33,24 +33,12 @@
                     <option value="6">Error For Web Page</option>
                 </select>
             </div>
+            <div class="item"><button id="btn-show-fps" class="<%=config.showFps ? 'checked' : ''%>">Show FPS</button></div>
             <div class="item">
-                <v-btn id="btn-show-fps" small height="25"><span style="color: #aaa;">Show FPS</span></v-btn>
+                <span style="font-size: small;" class="item">FPS:</span><input id="input-set-fps" type="number" value="<%=config.fps%>" />
             </div>
-            <div class="item">
-                <span style="font-size: small;color: #aaa;" class="item">FPS:</span><input id="input-set-fps"
-                    type="number" />
-            </div>
-            <div style="margin-right: 0px;" class="item">
-                <v-btn id="btn-pause" small height="25"><span style="color: #aaa;">Pause</span></v-btn>
-            </div>
-            <div class="item">
-                <v-btn id="btn-step" style="display: none;" small height="25">
-                    <span style="color: #aaa;">Step</span>
-                </v-btn>
-            </div>
-            <div class="item">
-                <v-btn id="btn-recompile" small height="25"><span style="color: #aaa;">Recompile</span></v-btn>
-            </div>
+            <div style="margin-right: 0;" class="item"><button id="btn-pause">Pause</button><button id="btn-step">Step</button></div>
+            <div class="item"><button id="btn-step" style="display: none;">Step</button></div>
             <v-icon @click="openCocosDocs" small>mdi-cloud-search</v-icon>
             <v-icon @click="openCocosForum" small>mdi-forum</v-icon>
             <v-icon @click="openCacheDialog" small>mdi-table</v-icon>
@@ -108,14 +96,14 @@
                 hide-details clearable clear-icon="mdi-close-circle-outline"></v-text-field>
             <v-treeview :items="treeData" item-key="id" dense activatable :search="treeSearchText"
                 :active.sync="selectedNodes">
-                <template v-slot:label="{ item, active }">
+                <template v-slot:label="{ item, active, open }">
                     <label v-if="item.active" style="color: white;">{{ item.name }}</label>
                     <label v-else style="color: gray;">{{ item.name }}</label>
                 </template>
             </v-treeview>
         </v-container>
         <v-container style="border-top: 2px solid darkgray;height: 50%;overflow-y: auto;">
-            <template v-if="selectedNode">
+            <template v-if="selectedNode && selectedNode.parent">
                 <!-- Node -->
                 <table style="width: 100%;color: white;" border="1">
                     <thead>
@@ -134,13 +122,15 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="row in nodeSchema.rows" :key="row.key">
+                        <tr v-for="row in nodeSchema.rows" :key="row.name">
                             <td style="padding: 10px;width: 40%;">{{ row.name }}</td>
                             <td style="width: 60%;">
                                 <v-color-picker v-if="row.type == 'color'" class="ma-2" canvas-height="80" width="259"
                                     v-model="selectedNode[row.key]"></v-color-picker>
                                 <v-simple-checkbox v-else-if="row.type == 'bool'" v-model="selectedNode[row.key]"
                                     style="padding: 10px;width: 100%;"></v-simple-checkbox>
+                                <input v-else-if="row.type == 'object_number'" type="number" v-model.number="selectedNode[row.parentKey][row.key]"
+                                    style="padding: 10px;width: 100%;" @input="onSubPropInput(selectedNode, row)"></input>
                                 <input v-else :type="row.type" v-model="selectedNode[row.key]"
                                     style="padding: 10px;width: 100%;"></input>
                             </td>
@@ -175,12 +165,17 @@
                                 <v-simple-checkbox v-else-if="row.type == 'bool'"
                                     v-model="selectedNode[component.key][row.key]" style="padding: 10px;width: 100%;">
                                 </v-simple-checkbox>
+                                <input v-else-if="row.type == 'number'" type="number" v-model.number="selectedNode[component.key][row.key]"
+                                    style="padding: 10px;width: 100%;"></input>
                                 <input v-else :type="row.type" v-model="selectedNode[component.key][row.key]"
                                     style="padding: 10px;width: 100%;"></input>
                             </td>
                         </tr>
                     </tbody>
                 </table>
+            </template>
+            <template v-else-if="selectedNode && !selectedNode.parent">
+                <!-- TODO:场景根节点 -->
             </template>
         </v-container>
     </v-navigation-drawer>
@@ -189,15 +184,23 @@
         <v-container fill-height>
             <div id="content" class="content">
                 <div class="contentWrap">
-                    <div id="GameDiv" class="wrapper"><canvas id="GameCanvas"></canvas>
+                    <div id="GameDiv" class="wrapper">
+                        <canvas id="GameCanvas"></canvas>
                         <div id="splash">
                             <div class="progress-bar stripes"><span></span></div>
                         </div>
                         <div id="bulletin">
-                            <div id="sceneIsEmpty" class="inner">预览场景中啥都没有，加点什么，或在编辑器中打开其它场景吧</div>
+                            <div id="sceneIsEmpty" class="inner"><%=tip_sceneIsEmpty%></div>
+                        </div>
+                        <div class="error" id="error">
+                            <div class="title">Error <i>(Please open the console to see detailed errors)</i></div>
+                            <div class="error-main"></div>
                         </div>
                     </div>
                 </div>
+                <p class="footer">
+                    Created with <a href="https://www.cocos.com/products" target="_blank" title="Cocos Creator 3D">Cocos Creator 3D</a>
+                </p>
             </div>
         </v-container>
     </v-content>
@@ -242,8 +245,10 @@
 
 </v-app>
 
-<script src="app/editor/static/preview-templates/ccc-devtools/libs/js/vue.min.js"></script>
-<script src="app/editor/static/preview-templates/ccc-devtools/libs/js/vuetify.js"></script>
-<script src="app/editor/static/preview-templates/ccc-devtools/config.js"></script>
-<script src="app/editor/static/preview-templates/ccc-devtools/libs/js/cc-console-utils.js"></script>
-<script src="app/editor/static/preview-templates/ccc-devtools/preview.js"></script>
+<script src="./ccc-devtools/libs/js/vue.min.js"></script>
+<script src="./ccc-devtools/libs/js/vuetify.js"></script>
+<script src="./ccc-devtools/config.js"></script>
+<script src="./ccc-devtools/libs/js/cc-console-utils.js"></script>
+<script src="./ccc-devtools/preview.js"></script>
+
+<%- include(cocosTemplate, {}) %>
