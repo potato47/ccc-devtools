@@ -29,7 +29,7 @@ Cocos Creator 网页调试工具，运行时查看、修改节点树，实时更
 
    ![t1](./screenshots/t1.png)
 
-2. 将本项目clone到上面的目录下，**如果使用下载压缩包的方式记得把后缀名-master去掉**
+2. 根据creator版本将本项目对应分支clone到上面的目录下，**如果使用下载压缩包的方式记得把后缀名-branchname去掉**
 
    ![t2](./screenshots/t2.png)
 
