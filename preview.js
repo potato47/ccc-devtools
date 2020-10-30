@@ -13,7 +13,6 @@ const app = new Vue({
             { text: 'Name', value: 'name' },
             { text: 'Preivew', value: 'preview' },
             { text: 'ID', value: 'id' },
-            { text: 'Content', value: 'content' },
             { text: 'Size', value: 'size' },
         ],
         cacheRawData: [],
@@ -143,7 +142,7 @@ const app = new Vue({
         },
         updateCacheData() {
             if (this.$data.cacheOnlyTexture) {
-                this.$data.cacheData = this.$data.cacheRawData.filter(item => item.content === 'cc.Texture2D');
+                this.$data.cacheData = this.$data.cacheRawData.filter(item => item.type === 'cc.Texture2D');
             } else {
                 this.$data.cacheData = this.$data.cacheRawData;
             }

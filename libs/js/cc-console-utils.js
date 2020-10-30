@@ -117,7 +117,7 @@ const initConsoleUtil = function () {
         return target;
     }
     cc.cache = function () {
-        let rawCacheData = cc.loader._cache;
+        let rawCacheData = cc.assetManager.assets._map;
         let cacheData = [];
         let totalTextureSize = 0;
         for (let k in rawCacheData) {
@@ -125,7 +125,7 @@ const initConsoleUtil = function () {
             if (item.type !== 'js' && item.type !== 'json') {
                 let itemName = '_';
                 let preview = '';
-                let content = (item.content && item.content.__classname__) ? item.content.__classname__ : item.type;
+                let content = item.__classname__;
                 let formatSize = -1;
                 if (item.type === 'png' || item.type === 'jpg') {
                     let texture = rawCacheData[k.replace('.' + item.type, '.json')];
@@ -134,29 +134,27 @@ const initConsoleUtil = function () {
                         preview = texture.content.url;
                     }
                 } else {
-                    if (item.content.name && item.content.name.length > 0) {
-                        itemName = item.content.name;
+                    if (item.name) {
+                        itemName = item.name;
                     } else if (item._owner) {
                         itemName = (item._owner && item._owner.name) || '_';
                     }
                     if (content === 'cc.Texture2D') {
-                        let texture = item.content;
-                        preview = texture.url;
-                        let textureSize = texture.width * texture.height * ((texture._native === '.jpg' ? 3 : 4) / 1024 / 1024);
+                        preview = item.nativeUrl;
+                        let textureSize = item.width * item.height * ((item._native === '.jpg' ? 3 : 4) / 1024 / 1024);
                         totalTextureSize += textureSize;
                         // sizeStr = textureSize.toFixed(3) + 'M';
                         formatSize = Math.round(textureSize * 1000) / 1000;
                     } else if (content === 'cc.SpriteFrame') {
-                        preview = item.content._texture.url;
+                        preview = item._texture.nativeUrl;
                     }
                 }
                 cacheData.push({
                     queueId: item.queueId,
-                    type: item.type,
+                    type: content,
                     name: itemName,
                     preview: preview,
-                    id: item.id,
-                    content: content,
+                    id: item._uuid,
                     size: formatSize
                 });
             }
