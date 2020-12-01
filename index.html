@@ -217,6 +217,7 @@
             <v-divider></v-divider>
             <v-card-text>
                 <v-data-table :headers="cacheHeaders" :items="cacheData" :search="cacheSearchText" :sort-by="['size']"
+                    click:row="openGithub"
                     :sort-desc="[true]" :footer-props="{
                         showFirstLastPage: true,
                         firstIcon: 'mdi-chevron-double-left',

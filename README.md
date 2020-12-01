@@ -1,4 +1,4 @@
-# ccc-devtools v3.0.1
+# ccc-devtools v3.0.0
 Cocos Creator 网页调试工具，运行时查看、修改节点树，实时更新节点属性，可视化缓存资源。
 
 ## 功能
@@ -25,27 +25,12 @@ Cocos Creator 网页调试工具，运行时查看、修改节点树，实时更
 
 ## 全局使用
 
-1. 点击 Creator 右上角进入编辑器 resources 目录，再依次进入`static/preview-templates`目录
-
-   ![t1](./screenshots/t1.png)
-
-2. 将本项目clone到上面的目录下，**如果使用下载压缩包的方式记得把后缀名-master去掉**
-
-   ![t2](./screenshots/t2.png)
-
-3. 打开 `index.jade`，找到 `body` 将中间部分替换为 `include ./ccc-devtools/index.html`，**注意用tab键对齐**
-
-   ![t3](./screenshots/t3.png)
+Cocos Creator 3.0暂不支持全局使用
 
 ## 项目使用
 
-Cocos Creator 从 v2.2 开始新增了自定义网页预览功能。
-
-1. 重复上面的操作步骤，将修改后的 `preview-templates` 目录拷贝到项目根目录
-
-2. 将 `ccc-devtools/index.html` 里所有引用的资源路径 `app/editor/static/preview-templates/ccc-devtools/...` 替换为 `ccc-devtools/...`
-
-3. 重启 Cocos Creator
+- `cd PROJECT_PATH && git clone -b v3.0.0 https://github.com/potato47/ccc-devtools.git preview-template`
+- 或者手动将本项目对应分支下载到项目目录后，将名字改为 `preview-template`
 
 ## 自定义
 

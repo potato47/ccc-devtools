@@ -131,49 +131,28 @@ const initConsoleUtil = function () {
         return target;
     }
     cc.cache = function () {
-        let rawCacheData = cc.loader._pipes[0].pipeline._cache;
+        let rawCacheData = cc.loader._cache;
         let cacheData = [];
         let totalTextureSize = 0;
         for (let k in rawCacheData) {
             let item = rawCacheData[k];
-            if (item.type !== 'js' && item.type !== 'json') {
-                let itemName = '_';
-                let preview = '';
-                let content = (item.content && item.content.__classname__) ? item.content.__classname__ : item.type;
-                let formatSize = -1;
-                if (item.type === 'png' || item.type === 'jpg') {
-                    let texture = rawCacheData[k.replace('.' + item.type, '.json')];
-                    if (texture && texture._owner) {
-                        itemName = texture._owner._name;
-                        preview = texture.content.url;
-                    }
-                } else {
-                    if (item.content.name && item.content.name.length > 0) {
-                        itemName = item.content.name;
-                    } else if (item._owner) {
-                        itemName = (item._owner && item._owner.name) || '_';
-                    }
-                    if (content === 'cc.Texture2D') {
-                        let texture = item.content;
-                        preview = texture._mipmaps[0].url;
-                        let textureSize = texture.width * texture.height * ((texture._native === '.jpg' ? 3 : 4) / 1024 / 1024);
-                        totalTextureSize += textureSize;
-                        // sizeStr = textureSize.toFixed(3) + 'M';
-                        formatSize = Math.round(textureSize * 1000) / 1000;
-                    } else if (content === 'cc.SpriteFrame') {
-                        preview = item.content._texture._mipmaps[0].url;
-                    }
-                }
-                cacheData.push({
-                    queueId: item.queueId,
-                    type: item.type,
-                    name: itemName,
-                    preview: preview,
-                    id: item.id,
-                    content: content,
-                    size: formatSize
-                });
+            let preview = '';
+            let type = item.__classname__;
+            let formatSize = -1;
+            if (type === 'cc.Texture2D') {
+                let image = item.mipmaps[0]
+                preview = image.url;
+                let textureSize = image.width * image.height * ((image._native === '.jpg' ? 3 : 4) / 1024 / 1024);
+                totalTextureSize += textureSize;
+                // sizeStr = textureSize.toFixed(3) + 'M';
+                formatSize = Math.round(textureSize * 1000) / 1000;
             }
+            cacheData.push({
+                type: type,
+                preview: preview,
+                id: item._uuid,
+                size: formatSize
+            });
         }
         let cacheTitle = `缓存 [文件总数:${cacheData.length}][纹理缓存:${totalTextureSize.toFixed(2) + 'M'}]`;
         return [cacheData, cacheTitle];
