@@ -12,8 +12,10 @@
         <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
         <div id="recompiling"><span>Recompiling...</span></div>
         <v-spacer></v-spacer>
-        <div class="toolbar disabled">
-            <div class="item">
+        <%- include(cocosToolBar, {config: config}) %>
+        <div class="toolbar">
+        <!-- <div class="toolbar disabled"> -->
+            <!-- <div class="item">
                 <select id="opts-device" value="<%=config.device%>">
                     <% Object.keys(devices).forEach((key) => {%>
                     <option value="<%=key%>"><%=devices[key].name%>(<%=devices[key].width%> X <%=devices[key].height%>)</option>
@@ -38,7 +40,7 @@
                 <span style="font-size: small;" class="item">FPS:</span><input id="input-set-fps" type="number" value="<%=config.fps%>" />
             </div>
             <div style="margin-right: 0;" class="item"><button id="btn-pause">Pause</button><button id="btn-step">Step</button></div>
-            <div class="item"><button id="btn-step" style="display: none;">Step</button></div>
+            <div class="item"><button id="btn-step" style="display: none;">Step</button></div> -->
             <v-icon @click="openCocosDocs" small>mdi-cloud-search</v-icon>
             <v-icon @click="openCocosForum" small>mdi-forum</v-icon>
             <v-icon @click="openCacheDialog" small>mdi-table</v-icon>
