@@ -161,6 +161,11 @@ const app = new Vue({
         },
         openCocosDocs() {
             window.open('https://docs.cocos.com/');
+        },
+        clearLocalStorage() {
+            console.warn("[ccc-devtools] clearLocalStorage");
+            localStorage.clear();
+            window.location.reload();
         }
     }
 });

@@ -51,13 +51,16 @@
             <div class="item">
                 <v-btn id="btn-recompile" small height="25"><span style="color: #aaa;">Recompile</span></v-btn>
             </div>
+            <div class="item">
+                <v-btn @click="clearLocalStorage" small height="25"><span style="color: #aaa;">Clear Local Storage</span></v-btn>
+            </div>
             <v-icon @click="openCocosDocs" small>mdi-cloud-search</v-icon>
             <v-icon @click="openCocosForum" small>mdi-forum</v-icon>
             <v-icon @click="openCacheDialog" small>mdi-table</v-icon>
             <v-icon @click="openGithub" small>mdi-home</v-icon>
         </div>
     </v-app-bar>
-    
+
     <div v-if="!isShowTop">
         <div id="recompiling"><span>Recompiling...</span></div>
         <div class="toolbar">
