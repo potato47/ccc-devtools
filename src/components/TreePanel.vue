@@ -4,16 +4,13 @@
     class="modal-drag">
     节点树
   </div>
-  <!-- <div style="width: 100%;" :style="{ height: treeViewHeight }">
-    
-  </div> -->
   <el-tree-v2 ref="treeView" :props="defaultProps" empty-text="正在加载场景" :highlight-current="true"
-      :expand-on-click-node="false" :default-expanded-keys="expandedKeys" @current-change="handleCurrentNodeChange"
-      @node-expand="handleNodeExpand" @node-collapse="handleNodeCollapse" :height="treeViewHeight">
-      <template #default="{ node }">
-        <span :class="{ 'node-hide': !node.data.active }">{{ node.label }}</span>
-      </template>
-    </el-tree-v2>
+    :expand-on-click-node="false" :default-expanded-keys="expandedKeys" @current-change="handleCurrentNodeChange"
+    @node-expand="handleNodeExpand" @node-collapse="handleNodeCollapse" :height="treeViewHeight">
+    <template #default="{ node }">
+      <span :class="{ 'node-hide': !node.data.active }">{{ node.label }}</span>
+    </template>
+  </el-tree-v2>
   <div style="width: 100%;border-top: 2px solid #1d1e21;overflow: auto;flex: 1;">
     <template v-if="updateKey !== 0 && Utils.checkNodeValid(currentNode)">
       <el-scrollbar>
@@ -76,8 +73,7 @@ function getChildByUuidPath(node: any, path: string[], index: number): any {
   return getChildByUuidPath(node, path, index + 1);
 }
 
-function handleCurrentNodeChange(data: TreeNode) {
-  console.log(data);
+function handleCurrentNodeChange(data: any) {
   // @ts-ignore
   const ccNode = getChildByUuidPath(cc.director.getScene(), data.path, 0);
   if (data) {
@@ -87,12 +83,12 @@ function handleCurrentNodeChange(data: TreeNode) {
   }
 }
 
-function handleNodeExpand(data: TreeNode) {
+function handleNodeExpand(data: any) {
   expandedNodeMap.set(data.uuid, true);
   expandedKeys = [...expandedNodeMap.keys()];
 }
 
-function handleNodeCollapse(data: TreeNode) {
+function handleNodeCollapse(data: any) {
   expandedNodeMap.delete(data.uuid);
   expandedKeys = [...expandedNodeMap.keys()];
 }
