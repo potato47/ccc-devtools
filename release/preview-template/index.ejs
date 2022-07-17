@@ -1,0 +1,58 @@
+<html class="dark">
+
+<head>
+    <link rel="icon" href="./favicon.ico" />
+    <meta charset="utf-8" />
+    <title>
+        <%=title%>
+    </title>
+    <meta name="viewport"
+        content="width=device-width,user-scalable=no,initial-scale=1,minimum-scale=1,maximum-scale=1,minimal-ui=true" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="full-screen" content="yes" />
+    <meta name="screen-orientation" content="portrait" />
+    <meta name="x5-fullscreen" content="true" />
+    <meta name="360-fullscreen" content="true" />
+    <meta name="renderer" content="webkit" />
+    <meta name="force-rendering" content="webkit" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <link rel="stylesheet" type="text/css" href="./index.css" />
+    <link rel="stylesheet" href="https://unpkg.com/element-plus/dist/index.css" />
+    <script src="https://unpkg.com/vue@next"></script>
+    <script src="https://unpkg.com/element-plus"></script>
+</head>
+
+<body>
+    <%- include(cocosToolBar, {config: config}) %>
+    <div style="flex: auto;display: flex;">
+        <% include ./dist/index.html %>
+        <div id="content" class="content">
+            <div class="contentWrap">
+                <div id="GameDiv" class="wrapper">
+                    <div id="Cocos3dGameContainer">
+                        <canvas id="GameCanvas"></canvas>
+                    </div>
+                    <div id="splash">
+                        <div class="progress-bar stripes"><span></span></div>
+                    </div>
+                    <div id="bulletin">
+                        <div id="sceneIsEmpty" class="inner">
+                            <%=tip_sceneIsEmpty%>
+                        </div>
+                    </div>
+                    <div class="error" id="error">
+                        <div class="title">Error <i>(Please open the console to see detailed errors)</i></div>
+                        <div class="error-main"></div>
+                    </div>
+                </div>
+            </div>
+            <p class="footer">
+                Created with <a href="https://www.cocos.com/products" target="_blank" title="Cocos Creator">Cocos
+                    Creator</a>
+            </p>
+        </div>
+    </div>
+    <%- include(cocosTemplate, {}) %>
+</body>
+
+</html>
