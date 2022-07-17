@@ -11,8 +11,6 @@ let showTree = ref(false);
       <TreePanel :show="showTree"></TreePanel>
     </vue-final-modal>
     <el-button size="small" @click="showTree = !showTree">节点树</el-button>
-    <el-button size="small" @click="showTree = !showTree">自定义监听</el-button>
-    <el-button size="small" @click="showTree = !showTree">设置</el-button>
   </div>
 </template>
 
