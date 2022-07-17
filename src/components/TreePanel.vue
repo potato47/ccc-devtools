@@ -1,16 +1,19 @@
 <template>
-  <div style="width: 100%;height: 30px;background-color: #26282f;display: flex;align-items: center;justify-content: center;color: white;" class="modal-drag">
+  <div
+    style="width: 100%;height: 30px;background-color: #26282f;display: flex;align-items: center;justify-content: center;color: white;"
+    class="modal-drag">
     节点树
   </div>
-  <div style="width: 100%;overflow: auto;" :style="{ height: treeViewHeight + 10 }">
-    <el-tree-v2 ref="treeView" :props="defaultProps" empty-text="正在加载场景" :highlight-current="true"
+  <!-- <div style="width: 100%;" :style="{ height: treeViewHeight }">
+    
+  </div> -->
+  <el-tree-v2 ref="treeView" :props="defaultProps" empty-text="正在加载场景" :highlight-current="true"
       :expand-on-click-node="false" :default-expanded-keys="expandedKeys" @current-change="handleCurrentNodeChange"
       @node-expand="handleNodeExpand" @node-collapse="handleNodeCollapse" :height="treeViewHeight">
       <template #default="{ node }">
         <span :class="{ 'node-hide': !node.data.active }">{{ node.label }}</span>
       </template>
     </el-tree-v2>
-  </div>
   <div style="width: 100%;border-top: 2px solid #1d1e21;overflow: auto;flex: 1;">
     <template v-if="updateKey !== 0 && Utils.checkNodeValid(currentNode)">
       <el-scrollbar>
@@ -37,7 +40,7 @@ import CCComponent from './CCComponent.vue';
 import UserComponent from './UserComponent.vue';
 
 const props = defineProps({
-    show: Boolean,
+  show: Boolean,
 });
 
 interface TreeNode {
@@ -157,6 +160,10 @@ const intervalId = setInterval(() => {
 
 .el-color-picker__trigger {
   width: 100% !important;
+}
+
+.el-tree-virtual-list {
+  overflow-y: hidden !important;
 }
 
 span {
