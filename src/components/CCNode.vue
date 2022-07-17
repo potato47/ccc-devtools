@@ -2,7 +2,7 @@
     <div class="row">
         <el-checkbox v-model="ccNode!.active" size="small" style="margin-right: 10px;" />
         <span class="header-title" style="flex: 1;">Node</span>
-        <el-button size="small">+</el-button>
+        <el-button size="small" @click="Utils.drawNodeRect(ccNode)">+</el-button>
         <el-button size="small" @click="Utils.outputToConsole(ccNode)">></el-button>
     </div>
     <PropItem v-for="prop in NodeModel.props" :key="prop.key" :model="NodeModel" :prop-name="prop.name"
