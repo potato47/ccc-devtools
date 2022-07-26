@@ -1,0 +1,46 @@
+<div class="toolbar disabled">
+    <div class="item"><button id="btn-show-devtools">CCDevtools</button></div>
+    <div class="item">
+        <select id="opts-device" value="<%=config.device%>">
+            <% Object.keys(devices).forEach((key) => {%>
+            <option value="<%=key%>"><%=devices[key].name%>(<%=devices[key].width%> X <%=devices[key].height%>)</option>
+            <% }) %>
+        </select>
+    </div>
+    <div class="item"><button id="btn-rotate" class="<%=config.rotate ? 'checked' : ''%>">Rotate</button></div>
+    <span style="font-size: small;" class="item">Debug Mode:</span>
+    <div class="item">
+        <select id="opts-debug-mode" value="<%=config.debugMode%>">
+            <option value="NONE">None</option>
+            <option value="VERBOSE">Verbose</option>
+            <option value="INFO">Info</option>
+            <option value="WARN">Warn</option>
+            <option value="ERROR">Error</option>
+            <option value="INFO_FOR_WEB_PAGE">Info For Web Page</option>
+            <option value="WARN_FOR_WEB_PAGE">Warn For Web Page</option>
+            <option value="ERROR_FOR_WEB_PAGE">Error For Web Page</option>
+        </select>
+    </div>
+    <div class="item"><button id="btn-show-fps" class="<%=config.showFps ? 'checked' : ''%>">Show FPS</button></div>
+    <div class="item">
+        <span style="font-size: small;" class="item">FPS:</span><input id="input-set-fps" type="number" value="<%=config.fps%>" />
+    </div>
+    <div style="margin-right: 0;" class="item"><button id="btn-pause">Pause</button><button id="btn-step">Step</button></div>
+    <div class="item"><button id="btn-step" style="display: none;">Step</button></div>
+    <div id="step-length">
+        <span>Step Length: </span>
+        <input type="text" value="1">
+        <span>ms</span>
+    </div>
+</div>
+<script>
+    const devtoolsBtn = document.getElementById('btn-show-devtools');
+    devtoolsBtn.addEventListener('click', () => {
+        cc.showDevtools = !cc.showDevtools;
+        if (cc.showDevtools) {
+            devtoolsBtn.classList.add('checked');
+        } else {
+            devtoolsBtn.classList.remove('checked');
+        }
+    }, false);
+</script>

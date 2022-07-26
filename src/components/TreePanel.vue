@@ -1,9 +1,9 @@
 <template>
-  <div
+  <!-- <div
     style="width: 100%;height: 30px;background-color: #26282f;display: flex;align-items: center;justify-content: center;color: white;"
     class="modal-drag">
     节点树
-  </div>
+  </div> -->
   <el-tree-v2 ref="treeView" :props="defaultProps" empty-text="正在加载场景" :highlight-current="true"
     :expand-on-click-node="false" :default-expanded-keys="expandedKeys" @current-change="handleCurrentNodeChange"
     @node-expand="handleNodeExpand" @node-collapse="handleNodeCollapse" :height="treeViewHeight">
@@ -11,7 +11,7 @@
       <span :class="{ 'node-hide': !node.data.active }">{{ node.label }}</span>
     </template>
   </el-tree-v2>
-  <div style="width: 100%;border-top: 2px solid #1d1e21;overflow: auto;flex: 1;">
+  <div style="width: 100%;border-top: 2px solid #1d1e21;overflow: auto;" :style="{ height: treeViewHeight }">
     <template v-if="updateKey !== 0 && Utils.checkNodeValid(currentNode)">
       <el-scrollbar>
         <CCNode :cc-node="currentNode" :update-key="updateKey"></CCNode>

@@ -18,9 +18,10 @@
         <link rel="stylesheet" type="text/css" href="./index.css" />
     </head>
     <body>
-        <%- include(cocosToolBar, {config: config}) %>
-        <div id="content" class="content">
-            <div class="contentWrap">
+        <%- include('./toolbar', {config: config}) %>
+        <div id="content" class="content" style="flex-direction: row;">
+            <% include ./dist/index.html %>
+            <div class="contentWrap" style="flex: 1;">
                 <div id="GameDiv" class="wrapper">
                     <div id="Cocos3dGameContainer">
                         <canvas id="GameCanvas"></canvas>
@@ -38,7 +39,6 @@
                 </div>
             </div>
             <p class="footer">
-                <% include ./dist/index.html %>
             </p>
         </div>
         <%- include(cocosTemplate, {}) %>

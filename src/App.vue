@@ -5,13 +5,14 @@ let showTree = ref(false);
 </script>
 
 <template>
-  <div>
+  <!-- <div>
     <vue-final-modal v-model="showTree" classes="modal-container" content-class="modal-content" :hide-overlay="true"
       :click-to-close="false" :prevent-click="true" :drag="true" :fit-parent="true" drag-selector=".modal-drag">
       <TreePanel :show="showTree"></TreePanel>
     </vue-final-modal>
     <el-button size="small" @click="showTree = !showTree">节点树</el-button>
-  </div>
+  </div> -->
+  <TreePanel :show="true" style="border: 2px solid blue;"></TreePanel>
 </template>
 
 <style scoped>
