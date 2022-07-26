@@ -4,14 +4,16 @@
     class="modal-drag">
     节点树
   </div> -->
-  <el-tree-v2 ref="treeView" :props="defaultProps" empty-text="正在加载场景" :highlight-current="true"
-    :expand-on-click-node="false" :default-expanded-keys="expandedKeys" @current-change="handleCurrentNodeChange"
-    @node-expand="handleNodeExpand" @node-collapse="handleNodeCollapse" :height="treeViewHeight">
-    <template #default="{ node }">
-      <span :class="{ 'node-hide': !node.data.active }">{{ node.label }}</span>
-    </template>
-  </el-tree-v2>
-  <div style="width: 100%;border-top: 2px solid #1d1e21;overflow: auto;" :style="{ height: treeViewHeight }">
+  <div style="width: 100%;" :style="{ height: treeViewHeight }">
+    <el-tree-v2 ref="treeView" :props="defaultProps" empty-text="正在加载场景" :highlight-current="true"
+      :expand-on-click-node="false" :default-expanded-keys="expandedKeys" @current-change="handleCurrentNodeChange"
+      @node-expand="handleNodeExpand" @node-collapse="handleNodeCollapse" :height="treeViewHeight">
+      <template #default="{ node }">
+        <span :class="{ 'node-hide': !node.data.active }">{{ node.label }}</span>
+      </template>
+    </el-tree-v2>
+  </div>
+  <div style="width: 100%;border-top: 2px solid #414243;" :style="{ height: treeViewHeight }">
     <template v-if="updateKey !== 0 && Utils.checkNodeValid(currentNode)">
       <el-scrollbar>
         <CCNode :cc-node="currentNode" :update-key="updateKey"></CCNode>
@@ -58,7 +60,7 @@ const defaultProps = {
   children: 'children',
 };
 
-const treeViewHeight = window.innerHeight * 0.4;
+const treeViewHeight = (window.innerHeight - 120) / 2;
 const treeView = ref(null);
 
 onMounted(() => {

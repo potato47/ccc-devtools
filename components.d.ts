@@ -10,6 +10,7 @@ declare module '@vue/runtime-core' {
     CCComponent: typeof import('./src/components/CCComponent.vue')['default']
     CCNode: typeof import('./src/components/CCNode.vue')['default']
     ElButton: typeof import('element-plus/es')['ElButton']
+    ElCard: typeof import('element-plus/es')['ElCard']
     ElCheckbox: typeof import('element-plus/es')['ElCheckbox']
     ElColorPicker: typeof import('element-plus/es')['ElColorPicker']
     ElInput: typeof import('element-plus/es')['ElInput']

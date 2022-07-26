@@ -12,7 +12,11 @@ let showTree = ref(false);
     </vue-final-modal>
     <el-button size="small" @click="showTree = !showTree">节点树</el-button>
   </div> -->
-  <TreePanel :show="true" style="border: 2px solid blue;"></TreePanel>
+  <!-- <div style="width: 100%;border: 2px solid blue;"> -->
+  <el-card :body-style="{ padding: 0 }" style="margin: 10px;">
+    <TreePanel :show="true"></TreePanel>
+  </el-card>
+  <!-- </div> -->
 </template>
 
 <style scoped>

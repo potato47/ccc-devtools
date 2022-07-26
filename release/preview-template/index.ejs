@@ -18,30 +18,32 @@
         <link rel="stylesheet" type="text/css" href="./index.css" />
     </head>
     <body>
-        <%- include('./toolbar', {config: config}) %>
-        <div id="content" class="content" style="flex-direction: row;">
-            <% include ./dist/index.html %>
-            <div class="contentWrap" style="flex: 1;">
-                <div id="GameDiv" class="wrapper">
-                    <div id="Cocos3dGameContainer">
-                        <canvas id="GameCanvas"></canvas>
-                    </div>
-                    <div id="splash">
-                        <div class="progress-bar stripes"><span></span></div>
-                    </div>
-                    <div id="bulletin">
-                        <div id="sceneIsEmpty" class="inner"><%=tip_sceneIsEmpty%></div>
-                    </div>
-                    <div class="error" id="error">
-                        <div class="title">Error <i>(Please open the console to see detailed errors)</i></div>
-                        <div class="error-main"></div>
+        <%- include(cocosToolBar, {config: config}) %>
+        <div style="display: flex;flex: auto;align-items: center;">
+            <%- include ./dist/index.html %>
+            <div id="content" class="content">
+                <div class="contentWrap">
+                    <div id="GameDiv" class="wrapper">
+                        <div id="Cocos3dGameContainer">
+                            <canvas id="GameCanvas"></canvas>
+                        </div>
+                        <div id="splash">
+                            <div class="progress-bar stripes"><span></span></div>
+                        </div>
+                        <div id="bulletin">
+                            <div id="sceneIsEmpty" class="inner"><%=tip_sceneIsEmpty%></div>
+                        </div>
+                        <div class="error" id="error">
+                            <div class="title">Error <i>(Please open the console to see detailed errors)</i></div>
+                            <div class="error-main"></div>
+                        </div>
                     </div>
                 </div>
+                <p class="footer">
+                    Created with <a href="https://www.cocos.com/products" target="_blank" title="Cocos Creator">Cocos Creator</a>
+                </p>
             </div>
-            <p class="footer">
-            </p>
         </div>
         <%- include(cocosTemplate, {}) %>
     </body>
 </html>
-

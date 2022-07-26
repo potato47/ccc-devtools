@@ -17,8 +17,7 @@ export default defineConfig({
   ],
   base: '/dist/',
   build: {
-    outDir: '/Users/next/projects/cocos/test360/preview-template/dist',
-    // outDir: './release/preview-template/dist',
+    outDir: './release/preview-template/dist',
     emptyOutDir: true
   }
 })
