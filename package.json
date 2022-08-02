@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "vue-tsc --noEmit && vite build",
     "preview": "vite preview",
-    "package": "node scripts/package.js"
+    "package": "node scripts/package.js",
+    "setup": "node scripts/setup.js"
   },
   "dependencies": {
     "element-plus": "^2.2.6",
@@ -17,6 +18,7 @@
   "devDependencies": {
     "@vitejs/plugin-vue": "^2.3.3",
     "adm-zip": "^0.5.9",
+    "fs-extra": "^10.1.0",
     "typescript": "^4.5.4",
     "unplugin-auto-import": "^0.9.3",
     "unplugin-vue-components": "^0.21.1",
