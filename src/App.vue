@@ -1,29 +1,30 @@
 <script setup lang="ts">
 import TreePanel from './components/TreePanel.vue';
 import { ref } from 'vue';
-let showTree = ref(false);
+import ProfilerPanel from './components/ProfilerPanel.vue';
+let showProfiler = ref(false);
+window.addEventListener('showProfiler', (e: any) => {
+  showProfiler.value = !showProfiler.value;
+});
 </script>
 
 <template>
-  <!-- <div>
-    <vue-final-modal v-model="showTree" classes="modal-container" content-class="modal-content" :hide-overlay="true"
+  <div>
+    <vue-final-modal v-model="showProfiler" classes="modal-container" content-class="modal-content" :hide-overlay="true"
       :click-to-close="false" :prevent-click="true" :drag="true" :fit-parent="true" drag-selector=".modal-drag">
-      <TreePanel :show="showTree"></TreePanel>
+      <ProfilerPanel :show="showProfiler"></ProfilerPanel>
     </vue-final-modal>
-    <el-button size="small" @click="showTree = !showTree">节点树</el-button>
-  </div> -->
-  <!-- <div style="width: 100%;border: 2px solid blue;"> -->
+  </div>
   <el-card :body-style="{ padding: 0 }" style="margin: 10px;">
     <TreePanel :show="true"></TreePanel>
   </el-card>
-  <!-- </div> -->
 </template>
 
 <style scoped>
 :deep(.modal-container) {
   display: flex;
-  justify-content: start;
-  align-items: center;
+  justify-content: end;
+  align-items: start;
 }
 
 :deep(.modal-content) {
@@ -34,8 +35,6 @@ let showTree = ref(false);
   padding: 0;
   border: 1px solid cadetblue;
   background: #171920;
-  min-width: 400px;
-  height: 80%;
 }
 </style>
 

@@ -33,16 +33,3 @@
         <span>ms</span>
     </div>
 </div>
-<script>
-    const devtoolsBtn = document.getElementById('btn-show-devtools');
-    devtoolsBtn.addEventListener('click', () => {
-        const devApp = document.getElementById('dev-app');
-        if (devApp.style.display === 'none') {
-            devApp.style.display = 'flex';
-            devtoolsBtn.classList.add('checked');
-        } else {
-            devApp.style.display = 'none';
-            devtoolsBtn.classList.remove('checked');
-        }
-    }, false);
-</script>

@@ -18,7 +18,7 @@
         <link rel="stylesheet" type="text/css" href="./index.css" />
     </head>
     <body>
-        <%- include('./toolbar', {config: config}) %>
+        <%- include(cocosToolBar, {config: config}) %>
         <div style="display: flex;flex: auto;align-items: center;">
             <%- include ./dist/index.html %>
             <div id="content" class="content">
@@ -47,3 +47,38 @@
         <%- include(cocosTemplate, {}) %>
     </body>
 </html>
+
+<script>
+    document.getElementsByClassName('toolbar')[0].insertAdjacentHTML('afterbegin', '<div><button id="btn-show-tree">Tree</button></div>');
+    const devtoolsBtn = document.getElementById('btn-show-tree');
+    let isOpen = !!localStorage.getItem('ccc_devtools_show');
+    toggle(isOpen);
+    devtoolsBtn.addEventListener('click', () => {
+        isOpen = !isOpen;
+        toggle(isOpen);
+    }, false);
+
+    // profilerBtn.addEventListener('click', () => {
+    //     if (profilerBtn.classList.contains('checked')) {
+    //         profilerBtn.classList.remove('checked');
+    //         window.dispatchEvent(new CustomEvent('showProfiler', { detail: { show: false } }));
+    //     } else {
+    //         profilerBtn.classList.add('checked');
+    //         window.dispatchEvent(new CustomEvent('showProfiler', { detail: { show: true } }));
+    //     }
+    // }, false);
+
+    function toggle(isOpen) {
+        const devApp = document.getElementById('dev-app');
+        window.ccdevShow = isOpen;
+        if (isOpen) {
+            devApp.style.display = 'flex';
+            devtoolsBtn.classList.add('checked');
+            localStorage.setItem('ccc_devtools_show', 1);
+        } else {
+            devApp.style.display = 'none';
+            devtoolsBtn.classList.remove('checked');
+            localStorage.removeItem('ccc_devtools_show');
+        }
+    }
+</script>

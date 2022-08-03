@@ -1,9 +1,4 @@
 <template>
-  <!-- <div
-    style="width: 100%;height: 30px;background-color: #26282f;display: flex;align-items: center;justify-content: center;color: white;"
-    class="modal-drag">
-    节点树
-  </div> -->
   <div style="width: 100%;" :style="{ height: treeViewHeight }">
     <el-tree-v2 ref="treeView" :props="defaultProps" empty-text="正在加载场景" :highlight-current="true"
       :expand-on-click-node="false" :default-expanded-keys="expandedKeys" @current-change="handleCurrentNodeChange"
@@ -113,7 +108,8 @@ function setChildren(container: TreeNode[], children: any[], path: string[]) {
 }
 
 function refreshTree() {
-  if (props.show) {
+  // @ts-ignore
+  if (props.show && window.ccdevShow) {
     let value: TreeNode[] = [];
     //@ts-ignore
     setChildren(value, cc.director.getScene().children, []);
