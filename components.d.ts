@@ -15,6 +15,7 @@ declare module '@vue/runtime-core' {
     ElColorPicker: typeof import('element-plus/es')['ElColorPicker']
     ElInput: typeof import('element-plus/es')['ElInput']
     ElInputNumber: typeof import('element-plus/es')['ElInputNumber']
+    ElLink: typeof import('element-plus/es')['ElLink']
     ElScrollbar: typeof import('element-plus/es')['ElScrollbar']
     ElTreeV2: typeof import('element-plus/es')['ElTreeV2']
     ProfilerPanel: typeof import('./src/components/ProfilerPanel.vue')['default']

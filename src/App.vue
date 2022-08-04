@@ -18,6 +18,7 @@ window.addEventListener('showProfiler', (e: any) => {
   <el-card :body-style="{ padding: 0 }" style="margin: 10px;">
     <TreePanel :show="true"></TreePanel>
   </el-card>
+  <el-link type="primary" href="https://github.com/potato47/ccc-devtools" target="_blank" style="position:absolute;left: 5px;bottom: 5px;">ccc-devtools</el-link>
 </template>
 
 <style scoped>

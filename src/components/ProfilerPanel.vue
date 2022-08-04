@@ -18,12 +18,12 @@ const props = defineProps({
     show: Boolean,
 });
 
-let updateKey = ref(1);
 let items = ref<any[]>([]);
 
 function refresh() {
-    if (props.show) {
-        updateKey.value = -updateKey.value;
+    // @ts-ignore
+    if (!cc || !cc.profiler || !cc.profiler._stats) {
+        return;
     }
     // @ts-ignore
     const stats = cc.profiler._stats;

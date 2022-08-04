@@ -58,16 +58,6 @@
         toggle(isOpen);
     }, false);
 
-    // profilerBtn.addEventListener('click', () => {
-    //     if (profilerBtn.classList.contains('checked')) {
-    //         profilerBtn.classList.remove('checked');
-    //         window.dispatchEvent(new CustomEvent('showProfiler', { detail: { show: false } }));
-    //     } else {
-    //         profilerBtn.classList.add('checked');
-    //         window.dispatchEvent(new CustomEvent('showProfiler', { detail: { show: true } }));
-    //     }
-    // }, false);
-
     function toggle(isOpen) {
         const devApp = document.getElementById('dev-app');
         window.ccdevShow = isOpen;
