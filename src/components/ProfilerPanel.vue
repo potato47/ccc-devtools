@@ -22,6 +22,7 @@ let items = ref<any[]>([]);
 
 function refresh() {
     // @ts-ignore
+    const cc = window['cc'];
     if (!cc || !cc.profiler || !cc.profiler._stats) {
         return;
     }
