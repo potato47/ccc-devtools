@@ -50,26 +50,26 @@
 </html>
 
 <script>
-    // document.getElementsByClassName('toolbar')[0].insertAdjacentHTML('afterbegin', '<div><button id="btn-show-tree">Tree</button></div>');
-    // const devtoolsBtn = document.getElementById('btn-show-tree');
-    // let isOpen = !!localStorage.getItem('ccc_devtools_show');
-    // toggle(isOpen);
-    // devtoolsBtn.addEventListener('click', () => {
-    //     isOpen = !isOpen;
-    //     toggle(isOpen);
-    // }, false);
+    document.getElementsByClassName('toolbar')[0].insertAdjacentHTML('afterbegin', '<div><button id="btn-show-tree">Tree</button></div>');
+    const devtoolsBtn = document.getElementById('btn-show-tree');
+    let isOpen = !!localStorage.getItem('ccc_devtools_show');
+    toggle(isOpen);
+    devtoolsBtn.addEventListener('click', () => {
+        isOpen = !isOpen;
+        toggle(isOpen);
+    }, false);
 
-    // function toggle(isOpen) {
-    //     const devApp = document.getElementById('dev-app');
-    //     window.ccdevShow = isOpen;
-    //     if (isOpen) {
-    //         devApp.style.display = 'flex';
-    //         devtoolsBtn.classList.add('checked');
-    //         localStorage.setItem('ccc_devtools_show', 1);
-    //     } else {
-    //         devApp.style.display = 'none';
-    //         devtoolsBtn.classList.remove('checked');
-    //         localStorage.removeItem('ccc_devtools_show');
-    //     }
-    // }
+    function toggle(isOpen) {
+        const devApp = document.getElementById('dev-app');
+        window.ccdevShow = isOpen;
+        if (isOpen) {
+            devApp.style.display = 'flex';
+            devtoolsBtn.classList.add('checked');
+            localStorage.setItem('ccc_devtools_show', 1);
+        } else {
+            devApp.style.display = 'none';
+            devtoolsBtn.classList.remove('checked');
+            localStorage.removeItem('ccc_devtools_show');
+        }
+    }
 </script>
