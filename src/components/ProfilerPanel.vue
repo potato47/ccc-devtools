@@ -12,22 +12,23 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref } from 'vue-demi';
+import { onMounted, onUnmounted, ref } from 'vue-demi';
 
 const props = defineProps({
     show: Boolean,
 });
 
 let items = ref<any[]>([]);
+let timeoutId: number;
 
 function refresh() {
     // @ts-ignore
     const cc = window['cc'];
-    if (!cc || !cc.profiler || !cc.profiler._stats) {
+    if (!cc || !cc.profiler || !cc.profiler.stats) {
         return;
     }
     // @ts-ignore
-    const stats = cc.profiler._stats;
+    const stats = cc.profiler.stats;
     items.value.forEach(item => {
         const data = stats[item.key];
         item.desc = data.desc;
@@ -37,7 +38,7 @@ function refresh() {
             item.value = data.counter._value.toFixed(2);
         }
     });
-    setTimeout(refresh, 1000);
+    timeoutId = setTimeout(refresh, 1000);
 }
 
 function init() {
@@ -58,6 +59,12 @@ function init() {
 
 onMounted(() => {
   init();
+});
+
+onUnmounted(() => {
+    if (!isNaN(timeoutId)) {
+        clearTimeout(timeoutId);
+    }
 });
 
 </script>
