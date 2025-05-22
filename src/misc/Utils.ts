@@ -17,7 +17,26 @@ export default class Utils {
         console.log('temp' + i);
         // @ts-ignore
         console.log(window['temp' + i]);
+        this.copyToClipboard('temp' + i)
     }
+
+    static async copyToClipboard(text: string) {
+        try {
+            // 使用 Clipboard API（现代浏览器）
+            await navigator.clipboard.writeText(text);
+            console.log('已通过 Clipboard API 复制到剪贴板:', text);
+        } catch (err) {
+            // 回退到 execCommand（旧浏览器）
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+            console.log('已通过 execCommand 回退复制到剪贴板:', text);
+        }
+    };
+
 
     static drawNodeRect(target: any) {
         let rect;
