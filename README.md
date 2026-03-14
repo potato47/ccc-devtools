@@ -83,3 +83,10 @@ project-folder
 - 自定义网页预览文档：https://docs.cocos.com/creator/manual/zh/editor/preview/browser.html
 - 插件地址：https://store.cocos.com/app/detail/3922
  
+## 维护补充
+
+以下内容为维护者补充说明，不影响原有文档描述：
+
+- 节点树支持按“节点名 / 组件名”搜索与高亮。
+- 搜索期间会自动展开命中路径，清空后恢复此前展开状态。
+- 提交 PR 时建议仅包含源码改动，避免把本地路径配置或构建产物一并提交。

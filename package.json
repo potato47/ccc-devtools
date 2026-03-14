@@ -11,8 +11,9 @@
     "setup": "node scripts/setup.js"
   },
   "dependencies": {
-    "element-plus": "^2.2.6",
+    "element-plus": "^2.13.5",
     "vue": "^3.2.25",
+    "vue-demi": "^0.14.10",
     "vue-final-modal": "^3.4.4"
   },
   "devDependencies": {

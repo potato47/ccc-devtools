@@ -18,6 +18,7 @@ export default defineConfig({
   base: '/dist/',
   build: {
     outDir: './release/preview-template/dist',
-    emptyOutDir: true
+    emptyOutDir: true,
+    chunkSizeWarningLimit: 1200
   }
 })
