@@ -1,28 +1,34 @@
 {
-  "name": "ccc-devtools",
-  "private": true,
-  "version": "0.0.0",
+  "name": "cccdev",
+  "version": "1.0.2",
+  "description": "CLI tool for installing Cocos Creator devtools preview template",
   "license": "MIT",
-  "scripts": {
-    "dev": "vite",
-    "build": "vue-tsc --noEmit && vite build",
-    "preview": "vite preview",
-    "package": "node scripts/package.js",
-    "setup": "node scripts/setup.js"
+  "author": "potato47",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/potato47/ccc-devtools"
   },
-  "dependencies": {
-    "element-plus": "^2.2.6",
-    "vue": "^3.2.25",
-    "vue-final-modal": "^3.4.4"
+  "bin": {
+    "cccdev": "./bin/cccdev.ts"
+  },
+  "files": [
+    "bin/",
+    "src/",
+    "template/"
+  ],
+  "scripts": {
+    "build": "bun run --cwd packages/cccdev-template-3x build && bun run copy-template",
+    "copy-template": "rm -rf template/3x && mkdir -p template/3x && cp -r packages/cccdev-template-3x/template/* template/3x/",
+    "fmt": "oxfmt",
+    "fmt:check": "oxfmt --check",
+    "lint": "oxlint",
+    "lint:fix": "oxlint --fix",
+    "type-check": "tsc --noEmit"
   },
   "devDependencies": {
-    "@vitejs/plugin-vue": "^2.3.3",
-    "adm-zip": "^0.5.9",
-    "fs-extra": "^10.1.0",
-    "typescript": "^4.5.4",
-    "unplugin-auto-import": "^0.9.3",
-    "unplugin-vue-components": "^0.21.1",
-    "vite": "^2.9.9",
-    "vue-tsc": "^0.34.7"
+    "@types/bun": "^1.3.10",
+    "oxfmt": "^0.40.0",
+    "oxlint": "^1.55.0",
+    "typescript": "^5.9.3"
   }
 }

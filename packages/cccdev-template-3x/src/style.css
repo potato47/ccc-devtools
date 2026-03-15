@@ -1,0 +1,519 @@
+/* ── CSS 变量（与 preview-template 主题保持一致） ── */
+:root {
+  --bg-base: #16161e;
+  --bg-panel: #1c1c28;
+  --bg-control: #252535;
+  --bg-hover: #2e2e48;
+  --bg-selected: rgba(108, 99, 255, 0.22);
+  --border: rgba(255, 255, 255, 0.08);
+  --border-focus: rgba(108, 99, 255, 0.6);
+  --accent: #6c63ff;
+  --accent-light: #a89dff;
+  --text-primary: #d0d0f0;
+  --text-muted: #7878a0;
+  --text-dim: rgba(208, 208, 240, 0.35);
+  --radius: 5px;
+  --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+}
+
+/* ── Toolbar 开关按钮 ── */
+.ccdev-toggle {
+  position: fixed;
+  right: 12px;
+  transform: translateY(-50%);
+  z-index: 9999;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-control);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    border-color 0.15s,
+    color 0.15s;
+}
+.ccdev-toggle:hover {
+  background: var(--bg-hover);
+  border-color: var(--border-focus);
+  color: var(--accent-light);
+}
+.ccdev-toggle.active {
+  background: rgba(108, 99, 255, 0.18);
+  border-color: var(--accent);
+  color: var(--accent-light);
+}
+
+/* ── 浮层主容器 ── */
+#cc-devtools {
+  position: fixed;
+  /* top / height 由 App.tsx 内联 style 动态注入，跟随 toolbar 实际高度 */
+  top: 42px;
+  right: 8px;
+  width: var(--devtools-width, 320px);
+  height: calc(100vh - 42px);
+  background: var(--bg-base);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  z-index: 8888;
+  font-family: var(--font);
+  font-size: 12px;
+  color: var(--text-primary);
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  transition: width 0s;
+}
+
+/* ── GitHub 链接 ── */
+.ccdev-github {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  z-index: 2;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  border-radius: 4px;
+  transition:
+    color 0.15s,
+    background 0.15s;
+}
+.ccdev-github:hover {
+  color: var(--text-primary);
+  background: var(--bg-hover);
+}
+
+/* ── 拖拽调整宽度手柄 ── */
+#cc-devtools-resize {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 5px;
+  height: 100%;
+  cursor: ew-resize;
+  z-index: 1;
+  background: transparent;
+  transition: background 0.15s;
+}
+#cc-devtools-resize:hover,
+#cc-devtools-resize.dragging {
+  background: rgba(108, 99, 255, 0.4);
+}
+
+#cc-devtools * {
+  box-sizing: border-box;
+}
+
+/* ── Panel 标题 ── */
+.panel-header {
+  height: 32px;
+  line-height: 32px;
+  padding: 0 10px;
+  background: var(--bg-panel);
+  border-bottom: 1px solid var(--border);
+  color: var(--text-muted);
+  font-size: 11px;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+
+/* ── 节点树面板 ── */
+.tree-panel {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  border-bottom: 2px solid var(--border);
+}
+
+/* ── 搜索栏 ── */
+.tree-search-bar {
+  display: flex;
+  align-items: center;
+  height: 32px;
+  padding: 0 8px;
+  gap: 6px;
+  background: var(--bg-panel);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.tree-search-icon {
+  color: var(--text-muted);
+  font-size: 15px;
+  flex-shrink: 0;
+  line-height: 1;
+  margin-top: 1px;
+}
+
+.tree-search-input {
+  flex: 1;
+  height: 22px;
+  background: var(--bg-control);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text-primary);
+  font-size: 11px;
+  padding: 0 6px;
+  outline: none;
+  transition: border-color 0.15s;
+  min-width: 0;
+}
+.tree-search-input::placeholder {
+  color: var(--text-muted);
+}
+.tree-search-input:focus {
+  border-color: var(--border-focus);
+}
+
+.tree-search-clear {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  border-radius: 50%;
+  color: var(--text-muted);
+  font-size: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    background 0.12s,
+    color 0.12s;
+}
+.tree-search-clear:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.tree-search-count {
+  padding: 4px 10px;
+  font-size: 10px;
+  color: var(--text-muted);
+  letter-spacing: 0.3px;
+}
+
+.tree-highlight {
+  background: rgba(108, 99, 255, 0.45);
+  color: #fff;
+  border-radius: 2px;
+  padding: 0 1px;
+}
+
+.tree-scroll {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.tree-scroll::-webkit-scrollbar {
+  width: 4px;
+}
+.tree-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+.tree-scroll::-webkit-scrollbar-thumb {
+  background: rgba(108, 99, 255, 0.3);
+  border-radius: 2px;
+}
+
+.tree-empty {
+  padding: 16px 12px;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.tree-node {
+  display: block;
+}
+
+.tree-row {
+  display: flex;
+  align-items: center;
+  height: 24px;
+  cursor: pointer;
+  border-radius: 3px;
+  margin: 1px 4px;
+  transition: background 0.12s;
+  user-select: none;
+}
+
+.tree-row:hover {
+  background: var(--bg-hover);
+}
+.tree-row.selected {
+  background: var(--bg-selected);
+}
+.tree-row.inactive .tree-label {
+  opacity: 0.35;
+}
+
+.tree-arrow {
+  width: 16px;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 13px;
+  flex-shrink: 0;
+  transition: transform 0.15s;
+  display: inline-block;
+}
+.tree-arrow.expanded {
+  transform: rotate(90deg);
+}
+.tree-arrow.invisible {
+  visibility: hidden;
+}
+
+.tree-label {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--text-primary);
+}
+
+/* ── 属性面板 ── */
+.prop-panel {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+.prop-scroll {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+.prop-scroll::-webkit-scrollbar {
+  width: 4px;
+}
+.prop-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+.prop-scroll::-webkit-scrollbar-thumb {
+  background: rgba(108, 99, 255, 0.3);
+  border-radius: 2px;
+}
+
+.prop-empty {
+  padding: 16px 12px;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.divider {
+  height: 1px;
+  background: var(--border);
+  margin: 2px 0;
+}
+
+/* ── 组件折叠块 ── */
+.comp-panel {
+  border-bottom: 1px solid var(--border);
+}
+
+.comp-header {
+  display: flex;
+  align-items: center;
+  height: 28px;
+  padding: 0 8px;
+  cursor: pointer;
+  background: var(--bg-panel);
+  gap: 6px;
+  user-select: none;
+}
+.comp-header:hover {
+  background: var(--bg-hover);
+}
+
+.comp-name {
+  flex: 1;
+  color: var(--accent-light);
+  font-size: 11px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.comp-arrow {
+  color: var(--text-muted);
+  font-size: 13px;
+  width: 14px;
+  text-align: center;
+}
+
+.comp-props {
+  padding: 4px 0;
+}
+
+.comp-empty {
+  padding: 6px 12px;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.comp-enabled {
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+/* ── 属性行 ── */
+.prop-row {
+  display: flex;
+  align-items: center;
+  height: 26px;
+  padding: 0 8px;
+  gap: 8px;
+}
+.prop-row:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.prop-name {
+  width: 72px;
+  flex-shrink: 0;
+  color: var(--text-muted);
+  font-size: 11px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.prop-value {
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+
+.prop-input {
+  width: 100%;
+  height: 22px;
+  padding: 0 6px;
+  background: var(--bg-control);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text-primary);
+  font-size: 11px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+.prop-input:focus {
+  border-color: var(--border-focus);
+}
+
+.prop-checkbox {
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+.prop-color {
+  width: 100%;
+  height: 22px;
+  padding: 1px 3px;
+  background: var(--bg-control);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+
+.prop-unknown {
+  color: var(--text-muted);
+  font-size: 11px;
+}
+
+/* ── 通用图标按钮 ── */
+.icon-btn {
+  height: 20px;
+  min-width: 20px;
+  padding: 0 5px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  color: var(--text-muted);
+  font-size: 11px;
+  cursor: pointer;
+  transition:
+    background 0.12s,
+    color 0.12s;
+  flex-shrink: 0;
+}
+.icon-btn:hover {
+  background: var(--bg-hover);
+  border-color: var(--border-focus);
+  color: var(--accent-light);
+}
+
+/* ── Profiler 浮层 ── */
+.profiler-float {
+  position: fixed;
+  width: 220px;
+  background: var(--bg-panel);
+  border: 1px solid rgba(108, 99, 255, 0.4);
+  border-radius: 6px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+  z-index: 9999;
+  overflow: hidden;
+}
+
+.profiler-drag {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 30px;
+  padding: 0 8px;
+  background: var(--bg-hover);
+  cursor: move;
+  user-select: none;
+  font-size: 11px;
+  color: var(--text-muted);
+  letter-spacing: 0.5px;
+}
+
+.profiler-body {
+  padding: 4px 0;
+}
+
+.profiler-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 3px 10px;
+  font-size: 11px;
+}
+.profiler-row:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.profiler-desc {
+  color: var(--text-muted);
+}
+.profiler-val {
+  color: var(--accent-light);
+  font-family: monospace;
+  font-size: 12px;
+}
+
+/* ── 数字输入框去掉 spin ── */
+input[type='number']::-webkit-outer-spin-button,
+input[type='number']::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type='number'] {
+  -moz-appearance: textfield;
+}
