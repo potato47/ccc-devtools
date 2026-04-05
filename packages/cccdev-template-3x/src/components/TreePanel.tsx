@@ -66,6 +66,16 @@ function expandAncestors(nodes: TreeNode[], query: string): Set<string> {
   return toExpand;
 }
 
+// ── 在树中查找目标节点的 uuid 路径 ───────────────────────
+function findPathInTree(nodes: TreeNode[], targetUuid: string): string[] | undefined {
+  for (const node of nodes) {
+    if (node.uuid === targetUuid) return [node.uuid];
+    const childPath = findPathInTree(node.children, targetUuid);
+    if (childPath) return [node.uuid, ...childPath];
+  }
+  return undefined;
+}
+
 // ── 高亮关键词 ────────────────────────────────────────────
 function HighlightText({ text, query }: { text: string; query: string }) {
   if (!query) return <span class="tree-label">{text}</span>;
@@ -80,22 +90,53 @@ function HighlightText({ text, query }: { text: string; query: string }) {
   );
 }
 
-// ── 搜索结果行 ────────────────────────────────────────────
+// ── 搜索结果行（支持展开/折叠子节点）─────────────────────
 function SearchResultItem({ node, query }: { node: TreeNode; query: string }) {
+  const expanded = useComputed(() => expandedUuids.value.has(node.uuid));
   const isSelected = useComputed(() => selectedNode.value?.uuid === node.uuid);
+  const hasChildren = node.children.length > 0;
 
   const handleClick = useCallback(() => {
     const ccNode = resolveNodeByPath(node.path);
     selectedNode.value = ccNode ?? null;
   }, [node.path]);
 
+  const handleToggle = useCallback(
+    (e: MouseEvent) => {
+      e.stopPropagation();
+      const next = new Set(expandedUuids.value);
+      if (next.has(node.uuid)) {
+        next.delete(node.uuid);
+      } else {
+        next.add(node.uuid);
+      }
+      expandedUuids.value = next;
+    },
+    [node.uuid],
+  );
+
   return (
-    <div
-      class={`tree-row${isSelected.value ? ' selected' : ''}${!node.active ? ' inactive' : ''}`}
-      style={{ paddingLeft: '8px' }}
-      onClick={handleClick}
-    >
-      <HighlightText text={node.name} query={query} />
+    <div class="tree-node">
+      <div
+        class={`tree-row${isSelected.value ? ' selected' : ''}${!node.active ? ' inactive' : ''}`}
+        style={{ paddingLeft: '8px' }}
+        onClick={handleClick}
+      >
+        <span
+          class={`tree-arrow${hasChildren ? '' : ' invisible'}${expanded.value ? ' expanded' : ''}`}
+          onClick={handleToggle}
+        >
+          ›
+        </span>
+        <HighlightText text={node.name} query={query} />
+      </div>
+      {hasChildren && expanded.value && (
+        <div class="tree-children">
+          {node.children.map((child) => (
+            <TreeNodeItem key={child.uuid} node={child} depth={1} />
+          ))}
+        </div>
+      )}
     </div>
   );
 }
@@ -213,17 +254,40 @@ export function TreePanel() {
     searchQuery.value = (e.target as HTMLInputElement).value;
   }, []);
 
-  const handleClear = useCallback(() => {
+  /** 清空搜索并定位到当前选中节点 */
+  const clearAndLocate = useCallback(() => {
+    const selected = selectedNode.value;
     searchQuery.value = '';
     inputRef.current?.focus();
+
+    if (!selected) return;
+
+    // 在树中找到选中节点的 path，展开所有祖先
+    const path: string[] | undefined = findPathInTree(treeData.value, selected.uuid);
+    if (path && path.length > 1) {
+      const next = new Set(expandedUuids.value);
+      // 展开除最后一个（自身）之外的所有祖先
+      for (let i = 0; i < path.length - 1; i++) next.add(path[i]);
+      expandedUuids.value = next;
+    }
+
+    // 等 DOM 更新后滚动到选中节点
+    requestAnimationFrame(() => {
+      const scrollContainer = inputRef.current?.closest('.tree-panel')?.querySelector('.tree-scroll');
+      const el = scrollContainer?.querySelector('.tree-row.selected');
+      el?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    });
   }, []);
 
-  // Esc 清空搜索
-  const handleKeyDown = useCallback((e: KeyboardEvent) => {
-    if (e.key === 'Escape') {
-      searchQuery.value = '';
-    }
-  }, []);
+  // Esc 清空搜索并定位
+  const handleKeyDown = useCallback(
+    (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        clearAndLocate();
+      }
+    },
+    [clearAndLocate],
+  );
 
   return (
     <div class="tree-panel">
@@ -242,7 +306,7 @@ export function TreePanel() {
           onKeyDown={handleKeyDown}
         />
         {query.value && (
-          <button class="tree-search-clear" onClick={handleClear} title="清空">
+          <button class="tree-search-clear" onClick={clearAndLocate} title="清空">
             ✕
           </button>
         )}
